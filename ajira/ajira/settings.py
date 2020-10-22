@@ -25,9 +25,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    
+    'allauth',
+    #'allauth.account',
+    #'allauth.socialaccount',
     'corsheaders',
+
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    'rest_auth.registration',
+
 ]
 
 MIDDLEWARE = [
@@ -113,11 +121,22 @@ STATIC_URL = '/static/'
 
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny'
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+#CORS_ORIGIN_WHITELIST = (
+#    'localhost:3000',
+#)
+
+#CSRF_COOKIE_NAME = "csrftoken"
+
+#ACCOUNT_EMAIL_REQUIRED = False
+#ACCOUNT_AUTHENTICATION_METHOD = 'username'
+#ACCOUNT_EMAIL_VERIFICATION = 'none'
