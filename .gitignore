@@ -21,3 +21,11 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+ajira/my_images/20200918_100548.jpg
+ajira/my_images/20200918_100700.jpg
+ajira/env/
+ajira/env
+ajira/.env
+ajira/db.sqlite3
