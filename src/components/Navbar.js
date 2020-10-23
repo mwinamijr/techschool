@@ -102,7 +102,7 @@ const Navbar = () => {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            Ajira
           </Typography>
           
           <div className={classes.grow} />

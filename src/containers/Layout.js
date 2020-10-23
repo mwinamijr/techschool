@@ -8,6 +8,7 @@ class BaseLayout extends Component {
         return (
             <div>
                 <Navbar />
+                { this.props.children }
                 <Footer />
             </div>
         )
