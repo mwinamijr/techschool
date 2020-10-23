@@ -26,10 +26,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'allauth',
-    #'allauth.account',
-    #'allauth.socialaccount',
     'corsheaders',
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -39,6 +40,9 @@ INSTALLED_APPS = [
     'posts',
 
 ]
+
+SITE_ID = 1
+
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
