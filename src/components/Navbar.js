@@ -10,6 +10,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import HomeIcon from '@material-ui/icons/Home';
 
 import {useStyles} from './styles/Navbar';
 
@@ -104,7 +105,15 @@ const Navbar = () => {
           <Typography className={classes.title} variant="h6" noWrap>
             Ajira
           </Typography>
-          
+
+          <div>
+          <Button color="inherit">
+          <IconButton>
+            <HomeIcon />
+          </IconButton>
+          </Button>
+          <Button color="inherit">Posts</Button>
+          </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton>
