@@ -1,16 +1,13 @@
 import React from 'react';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import  { Link } from 'react-router-dom';
+
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import HomeIcon from '@material-ui/icons/Home';
+
+import { AppBar, Toolbar, IconButton, Typography, Button, MenuItem, Menu } from '@material-ui/core';
 
 import {useStyles} from './styles/Navbar';
 
@@ -112,7 +109,7 @@ const Navbar = () => {
             <HomeIcon />
           </IconButton>
           </Button>
-          <Button color="inherit">Posts</Button>
+          <Button color="inherit"><Link to="/posts">Posts</Link></Button>
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
