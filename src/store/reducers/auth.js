@@ -32,7 +32,7 @@ const authFail = (state, action) => {
 const authLogout = (state, action) => {
 	return updatedObject(state, {
 		token: null
-	}
+	});
 }
 
 const reducer = (state=initialState, action) => {
@@ -45,3 +45,5 @@ const reducer = (state=initialState, action) => {
 		return state;
 	}
 }
+
+export default reducer;
