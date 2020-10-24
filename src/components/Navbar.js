@@ -1,5 +1,5 @@
 import React from 'react';
-import  { Link } from 'react-router-dom';
+import  { Link, NavLink } from 'react-router-dom';
 
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
@@ -106,7 +106,9 @@ const Navbar = () => {
           <div>
           <Button color="inherit">
           <IconButton>
-            <HomeIcon />
+            <Link to="/">
+              <HomeIcon />
+            </Link>
           </IconButton>
           </Button>
           <Button color="inherit"><Link to="/posts">Posts</Link></Button>
@@ -116,7 +118,11 @@ const Navbar = () => {
             <IconButton>
               <AccountCircle />
             </IconButton>
-            <Button color="inherit">Login</Button>
+            <Button color="inherit">
+            <NavLink to="/login">
+            Login
+            </NavLink>
+            </Button>
           </div>
           <div className={classes.sectionMobile}>
             <IconButton
