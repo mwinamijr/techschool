@@ -11,7 +11,7 @@ import { AppBar, Toolbar, IconButton, Typography, Button, MenuItem, Menu } from 
 
 import {useStyles} from './styles/Navbar';
 
-const Navbar = () => {
+const Navbar = (props) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
@@ -115,14 +115,27 @@ const Navbar = () => {
           </div>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton>
-              <AccountCircle />
-            </IconButton>
-            <Button color="inherit">
-            <NavLink to="/login">
-            Login
-            </NavLink>
-            </Button>
+            
+            {
+              props.isAuthenticated ?
+              <span>
+                <IconButton>
+                  <AccountCircle />
+                </IconButton>
+                <Button color="inherit">
+                  <NavLink to="/logout">
+                  Logout
+                  </NavLink>
+                </Button>
+              </span>
+              :
+                <Button color="inherit">
+                  <NavLink to="/login">
+                  Login
+                  </NavLink>
+                </Button>
+
+            }
           </div>
           <div className={classes.sectionMobile}>
             <IconButton
