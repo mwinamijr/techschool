@@ -40,8 +40,8 @@ const SignIn = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const userName = e.target.value.name.get('username');
-    const password = e.target.value.name.get('password');
+    const userName = e.target.elements.username.value;
+    const password = e.target.elements.password.value;
 
     console.log(userName, password)
 
