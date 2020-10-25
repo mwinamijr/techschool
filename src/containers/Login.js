@@ -3,11 +3,8 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -38,23 +35,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-class SignIn extends React.Component {
+const SignIn = (props) => {
 
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        this.props.onAuth(values.userName, values.password);
-        this.props.history.push('/');
-      }
-    });
+
+    const userName = e.target.value.name.get('username');
+    const password = e.target.value.name.get('password');
+
+    console.log(userName, password)
+
+    props.onAuth(userName, password);
+    props.history.push('/');
   }
-  render(){
+  
 
     let errorMessage = null;
-    if (this.props.error) {
+    if (props.error) {
         errorMessage = (
-            <p>{this.props.error.message}</p>
+            <p>{props.error.message}</p>
         );
     }
 
@@ -63,7 +62,7 @@ class SignIn extends React.Component {
       <div>
       {errorMessage}
         {
-          this.props.loading ?
+          props.loading ?
 
             <CircularProgress disableShrink />
 
@@ -78,7 +77,7 @@ class SignIn extends React.Component {
               <Typography component="h1" variant="h5">
                 Sign in
               </Typography>
-              <form className={classes.form} noValidate>
+              <form className={classes.form} noValidate onSubmit={handleSubmit}>
                 <TextField
                   variant="outlined"
                   margin="normal"
@@ -129,7 +128,7 @@ class SignIn extends React.Component {
         </div>
     );
   }
-}
+
 
 const mapStateToProps = (state) => {
     return {

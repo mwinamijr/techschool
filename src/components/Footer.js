@@ -33,7 +33,7 @@ const StickyFooter = () => {
       <footer className={classes.footer}>
         <Container>
           <Typography variant="h6" align="center" gutterBottom>My sticky footer can be found here.</Typography>
-          <Typography variant="subtitle1" align="center" color="textSecond">My sticky footer can be found here.</Typography>
+          <Typography variant="subtitle1" align="center" color="textSecondary">My sticky footer can be found here.</Typography>
           <Copyright />
         </Container>
       </footer>

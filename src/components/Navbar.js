@@ -104,13 +104,12 @@ const Navbar = (props) => {
           </Typography>
 
           <div>
-          <Button color="inherit">
           <IconButton>
             <Link to="/">
               <HomeIcon />
             </Link>
           </IconButton>
-          </Button>
+          
           <Button color="inherit"><Link to="/posts">Posts</Link></Button>
           </div>
           <div className={classes.grow} />
