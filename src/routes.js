@@ -2,7 +2,7 @@ import React from 'react';
 import { Route } from "react-router-dom";
 
 import Home from './containers/HomePage';
-import PostList from './containers/PostList';
+import PostList from './containers/Posts';
 import PostDeatil from './containers/PostDetails';
 import Login from './containers/Login';
 

@@ -7,7 +7,7 @@ const getPostListStart = () => {
   };
 };
 
-const getAPostListSuccess = posts => {
+const getPostListSuccess = posts => {
   return {
     type: actionTypes.GET_POSTS_LIST_SUCCESS,
     posts
@@ -31,7 +31,7 @@ export const getPosts = token => {
     axios
       .get("http://127.0.0.1:8000/assignments/")
       .then(res => {
-        const assignments = res.data;
+        const posts = res.data;
         dispatch(getPostListSuccess(posts));
       })
       .catch(err => {
