@@ -36,7 +36,7 @@ const reducer = (state = initialState, action) => {
         return getPostListStart(state, action);
       case actionTypes.GET_POSTS_LIST_SUCCESS:
         return getPostListSuccess(state, action);
-      case actionTypes.GET_POSTS_LIST_START:
+      case actionTypes.GET_POSTS_LIST_FAIL:
         return getPostListFail(state, action);
       default:
         return state;

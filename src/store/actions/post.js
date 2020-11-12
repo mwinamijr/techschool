@@ -29,7 +29,7 @@ export const getPosts = token => {
       Authorization: `Token ${token}`
     };
     axios
-      .get("http://127.0.0.1:8000/assignments/")
+      .get("http://127.0.0.1:8000/posts/")
       .then(res => {
         const posts = res.data;
         dispatch(getPostListSuccess(posts));

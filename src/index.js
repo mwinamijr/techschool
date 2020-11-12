@@ -1,17 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
+
+import 'antd/dist/antd.css';
+
 import * as serviceWorker from './serviceWorker';
 
-import { createStore, compose, applyMiddleware } from 'redux';
+import { createStore, compose, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import { Provider } from "react-redux";
 
-import reducer from './store/reducers/auth';
+import authReducer from './store/reducers/auth';
+import postsReducer from "./store/reducers/post";
 
 const composeEnhances = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
 
-const store = createStore(reducer, composeEnhances(
+const rootReducer = combineReducers({
+	auth: authReducer,
+	posts: postsReducer
+  });
+
+const store = createStore(rootReducer, composeEnhances(
 	applyMiddleware(thunk)
 	));
 
