@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { Button, Card } from "antd";
 import CustomForm from "../components/Form";
 
+const { Meta } = Card;
 
 class PostDetail extends React.Component {
   state = {
@@ -11,18 +12,17 @@ class PostDetail extends React.Component {
   };
 
   componentDidMount() {
-    const postID = this.props.match.params.postID;
+    const postID = this.props.match.params.id;
     axios.get(`http://127.0.0.1:8000/posts/${postID}/`).then(res => {
       this.setState({
         post: res.data
       });
-    console.log(res.data)
     });
   }
 
   handleDelete = event => {
     event.preventDefault();
-    const postID = this.props.match.params.postID;
+    const postID = this.props.match.params.id;
     axios.defaults.headers = {
       "Content-Type": "application/json",
       Authorization: `Token ${this.props.token}`
@@ -38,14 +38,23 @@ class PostDetail extends React.Component {
   render() {
     return (
       <div>
-        <Card title={this.state.post.title}>
+        <Card
+        title={this.state.post.title}
+          hoverable
+          cover={<img alt="example" src={this.state.post.photo} />}
+        >
           <p> {this.state.post.description} </p>
+          <hr />
+          <Meta title="Europe Street beat" description="www.instagram.com" />
         </Card>
+
+        <br />
+      
         <CustomForm
           {...this.props}
           token={this.props.token}
           requestType="put"
-          postID={this.props.match.params.postID}
+          postID={this.props.match.params.id}
           btnText="Update"
         />
         <form onSubmit={this.handleDelete}>

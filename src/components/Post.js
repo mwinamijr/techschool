@@ -37,7 +37,7 @@ const Post = props => {
             <img
               width={272}
               alt="logo"
-              src="https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png"
+              src={item.photo}
             />
           }
         >
