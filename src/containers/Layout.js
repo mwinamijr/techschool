@@ -18,6 +18,11 @@ class CustomLayout extends React.Component {
                     defaultSelectedKeys={['2']}
                     style={{ lineHeight: '64px' }}
                 >
+
+                    <Menu.Item key="1">
+                        <Link to="/posts">Posts</Link>
+                    </Menu.Item>
+                    
     
                 {
                     this.props.isAuthenticated ?
@@ -33,10 +38,7 @@ class CustomLayout extends React.Component {
                     </Menu.Item>
                 }
     
-                    <Menu.Item key="1">
-                        <Link to="/posts">Posts</Link>
-                    </Menu.Item>
-                    
+                   
                 </Menu>
                 </Header>
                 <Content style={{ padding: '0 50px' }}>
