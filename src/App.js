@@ -1,24 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
+import Header from "./components/Header";
+import Sidebar from "./components/Sidebar";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="d-flex flex-column" style={{ height: "100vh" }}>
+        {/* Navbar */}
+
+        <Header />
+        {/* Main Layout */}
+        <div className="d-flex" style={{ flexGrow: 1 }}>
+          <Sidebar />
+          <div className="content p-4" style={{ flexGrow: 1 }}>
+            <Routes>
+              <Route path="/" element={<h1>Home Page</h1>} />
+              <Route path="/dashboard" element={<h1>Dashboard Page</h1>} />
+              <Route
+                path="/products/action"
+                element={<h1>Action Product Page</h1>}
+              />
+              <Route
+                path="/products/another-action"
+                element={<h1>Another Action Product Page</h1>}
+              />
+              <Route path="/orders" element={<h1>Orders Page</h1>} />
+            </Routes>
+          </div>
+        </div>
+      </div>
+    </Router>
   );
 }
 
