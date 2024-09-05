@@ -3,6 +3,8 @@ import "./App.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
 
 function App() {
   return (
@@ -28,6 +30,8 @@ function App() {
               />
               <Route path="/orders" element={<h1>Orders Page</h1>} />
               <Route path="/profile" element={<h1>Profile Page</h1>} />
+              <Route path="/login" element={<LoginScreen />} />
+              <Route path="/register" element={<RegisterScreen />} />
             </Routes>
           </div>
         </div>
