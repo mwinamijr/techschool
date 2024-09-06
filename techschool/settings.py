@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "debug_toolbar",
-    "api.apps.ApiConfig",
     "users.apps.UsersConfig",
 ]
 

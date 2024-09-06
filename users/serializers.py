@@ -7,7 +7,6 @@ from .models import CustomUser
 
 class UserSerializer(serializers.ModelSerializer):
     is_admin = serializers.SerializerMethodField(read_only=True)
-    is_accountant = serializers.SerializerMethodField(read_only=True)
     is_teacher = serializers.SerializerMethodField(read_only=True)
     is_student = serializers.SerializerMethodField(read_only=True)
 
@@ -16,7 +15,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "email",
-            "username",
             "first_name",
             "middle_name",
             "last_name",
@@ -32,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.is_teacher
 
     def get_is_student(self, obj):
-        return obj.is_parent
+        return obj.is_student
 
 
 class UserSerializerWithToken(UserSerializer):
