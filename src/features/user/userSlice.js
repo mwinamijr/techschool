@@ -38,6 +38,19 @@ const userSlice = createSlice({
         const error = payload;
         console.log(error);
         state.error = error;
+      })
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(registerUser.fulfilled, (state, { payload }) => {
+        const user = payload;
+        state.loading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+      })
+      .addCase(registerUser.rejected, (state, { payload }) => {
+        const error = payload;
+        state.error = error;
       });
   },
 });
@@ -48,7 +61,7 @@ export const loginUser = createAsyncThunk(
     try {
       const config = {
         headers: {
-          "Content-type": "application/json",
+          "content-type": "application/json",
         },
       };
       const { data } = await axios.post(
@@ -64,9 +77,19 @@ export const loginUser = createAsyncThunk(
 );
 
 export const registerUser = createAsyncThunk(
-  "/user/register",
+  "user/register",
   async (user, thunkAPI) => {
-    console.log(`Register user: ${user}`);
+    try {
+      const config = {
+        headers: {
+          "content-type": "application/json",
+        },
+      };
+      const { data } = await axios.post(`${baseUrl}/api/users/`, user, config);
+      return data;
+    } catch (error) {
+      return error.message;
+    }
   }
 );
 

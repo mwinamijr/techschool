@@ -5,10 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import FormContainer from "../components/FormContainer";
-//import { register } from '../actions/userActions'
+import { registerUser } from "../features/user/userSlice";
 
 function RegisterScreen() {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,8 +21,7 @@ function RegisterScreen() {
 
   const redirect = location.search ? location.search.split("=")[1] : "/";
 
-  const userRegister = useSelector((state) => state.user);
-  const { error, loading, user } = userRegister;
+  const { error, loading, user } = useSelector((state) => state.user);
 
   useEffect(() => {
     if (user) {
@@ -35,25 +35,44 @@ function RegisterScreen() {
     if (password !== confirmPassword) {
       setMessage("Passwords do not match");
     } else {
-      //dispatch(register(name, email, password));
+      dispatch(
+        registerUser({
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          password: password,
+          is_student: true,
+        })
+      );
     }
   };
 
   return (
     <FormContainer>
-      <h1>Sign In</h1>
+      <h1>Register User</h1>
       {message && <Message variant="danger">{message}</Message>}
       {error && <Message variant="danger">{error}</Message>}
       {loading && <Loader />}
       <Form onSubmit={submitHandler}>
-        <Form.Group controlId="name">
-          <Form.Label>Name</Form.Label>
+        <Form.Group controlId="first name">
+          <Form.Label>First Name</Form.Label>
           <Form.Control
             required
             type="name"
-            placeholder="Enter name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter first name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+          ></Form.Control>
+        </Form.Group>
+
+        <Form.Group controlId="last name">
+          <Form.Label>Last Name</Form.Label>
+          <Form.Control
+            required
+            type="name"
+            placeholder="Enter last name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
           ></Form.Control>
         </Form.Group>
 
@@ -88,6 +107,10 @@ function RegisterScreen() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           ></Form.Control>
+        </Form.Group>
+        <Form.Group>
+          <Form.Check type="checkbox" id="isStudent" label="Is Student" />
+          <Form.Check type="checkbox" id="isTeacher" labe="Is Teacher" />
         </Form.Group>
 
         <Button type="submit" variant="primary">

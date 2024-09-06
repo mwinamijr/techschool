@@ -40,6 +40,7 @@ function LoginScreen() {
         <Form.Group controlId="email">
           <Form.Label>Email Address</Form.Label>
           <Form.Control
+            required
             type="text"
             placeholder="Enter Username"
             value={email}
@@ -50,6 +51,7 @@ function LoginScreen() {
         <Form.Group controlId="password">
           <Form.Label>Password</Form.Label>
           <Form.Control
+            required
             type="password"
             placeholder="Enter Password"
             value={password}
