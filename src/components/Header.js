@@ -1,9 +1,14 @@
 import { Link } from "react-router-dom";
 import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { LinkContainer } from "react-router-bootstrap";
 
+import { logout } from "../features/user/userSlice";
+
 function Header() {
-  const userInfo = { name: "mwinami" };
+  const { user } = useSelector((store) => store.user);
+
+  const dispatch = useDispatch();
   return (
     <Navbar bg="light" expand="lg" className="shadow-sm">
       <Navbar.Brand as={Link} to="/" className="ms-3">
@@ -11,8 +16,11 @@ function Header() {
       </Navbar.Brand>
 
       <Navbar id="basic-navbar-nav" className="justify-content-end me-3">
-        {userInfo ? (
-          <NavDropdown title={userInfo.name} id="username">
+        {user ? (
+          <NavDropdown
+            title={user.first_name !== null ? user.first_name : user.email}
+            id="username"
+          >
             <LinkContainer
               to="/profile"
               style={{ backgroundColor: "transparent", color: "#212529" }}
@@ -20,7 +28,13 @@ function Header() {
               <NavDropdown.Item>Profile</NavDropdown.Item>
             </LinkContainer>
 
-            <NavDropdown.Item>Logout</NavDropdown.Item>
+            <NavDropdown.Item
+              onClick={() => {
+                dispatch(logout());
+              }}
+            >
+              Logout
+            </NavDropdown.Item>
           </NavDropdown>
         ) : (
           <Nav>

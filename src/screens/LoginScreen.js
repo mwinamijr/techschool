@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import FormContainer from "../components/FormContainer";
-//import { login } from '../actions/userActions'
+import { loginUser } from "../features/user/userSlice";
 
 function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -28,7 +28,7 @@ function LoginScreen() {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    //dispatch(login(email, password))
+    dispatch(loginUser({ email: email, password: password }));
   };
 
   return (
