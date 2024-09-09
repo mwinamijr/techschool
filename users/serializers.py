@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
-from .models import CustomUser, Student
+from .models import CustomUser, Student, Teacher
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -67,4 +67,10 @@ class UserSerializerWithToken(UserSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
+        fields = "__all__"
+
+
+class TeacherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Teacher
         fields = "__all__"
