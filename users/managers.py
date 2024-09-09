@@ -1,4 +1,4 @@
-from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import BaseUserManager
 from django.utils.translation import gettext_lazy as _
 
 
@@ -12,6 +12,7 @@ class CustomUserManager(BaseUserManager):
         """
         Create and save a User with the given email and password.
         """
+        print(email)
         if not email:
             raise ValueError(_("The Email must be set"))
         email = self.normalize_email(email)

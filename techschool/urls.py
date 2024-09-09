@@ -26,6 +26,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", TemplateView.as_view(template_name="index.html")),
     path("api/users/", include("api.users.urls")),
+    path("api/students/", include("api.students.urls")),
     path("__debug__/", include(debug_toolbar.urls)),
 ]
 

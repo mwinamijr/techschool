@@ -8,9 +8,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.http import Http404
 
-from .models import CustomUser as User
+from .models import CustomUser as User, Student
 
-from .serializers import UserSerializer, UserSerializerWithToken
+from .serializers import UserSerializer, UserSerializerWithToken, StudentSerializer
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -76,3 +76,25 @@ class UserDetailView(views.APIView):
         user = self.get_object(pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class StudentListView(views.APIView):
+    """
+    List all students, or create a new student.
+    """
+
+    # permission_classes = [IsAuthenticated]
+    def get(self, request, format=None):
+        students = Student.objects.all()
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = StudentSerializer(data=request.data)
+
+        print(serializer.is_valid())
+        print(request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
