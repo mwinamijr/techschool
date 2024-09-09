@@ -12,6 +12,7 @@ const initialState = {
   loading: false,
   error: null,
   user: getUserFromLocalStorage(),
+  users: [],
 };
 
 const userSlice = createSlice({
@@ -39,16 +40,27 @@ const userSlice = createSlice({
         console.log(error);
         state.error = error;
       })
-      .addCase(registerUser.pending, (state) => {
+      .addCase(registerStudent.pending, (state) => {
         state.loading = true;
       })
-      .addCase(registerUser.fulfilled, (state, { payload }) => {
+      .addCase(registerStudent.fulfilled, (state, { payload }) => {
         const user = payload;
         state.loading = false;
         state.user = user;
-        addUserToLocalStorage(user);
       })
-      .addCase(registerUser.rejected, (state, { payload }) => {
+      .addCase(registerStudent.rejected, (state, { payload }) => {
+        const error = payload;
+        state.error = error;
+      })
+      .addCase(listUsers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(listUsers.fulfilled, (state, { payload }) => {
+        const users = payload;
+        state.loading = false;
+        state.users = users;
+      })
+      .addCase(listUsers.rejected, (state, { payload }) => {
         const error = payload;
         state.error = error;
       });
@@ -76,8 +88,8 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-export const registerUser = createAsyncThunk(
-  "user/register",
+export const registerStudent = createAsyncThunk(
+  "student/register",
   async (user, thunkAPI) => {
     try {
       const config = {
@@ -85,13 +97,33 @@ export const registerUser = createAsyncThunk(
           "content-type": "application/json",
         },
       };
-      const { data } = await axios.post(`${baseUrl}/api/users/`, user, config);
+      const { data } = await axios.post(
+        `${baseUrl}/api/students/`,
+        user,
+        config
+      );
       return data;
     } catch (error) {
       return error.message;
     }
   }
 );
+
+export const listUsers = createAsyncThunk("usersList", async () => {
+  const user = getUserFromLocalStorage();
+  try {
+    const config = {
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${user.token}`,
+      },
+    };
+    const { data } = await axios.get(`${baseUrl}/api/users/`, config);
+    return data;
+  } catch (error) {
+    return error.message;
+  }
+});
 
 export const { logout } = userSlice.actions;
 export default userSlice.reducer;
