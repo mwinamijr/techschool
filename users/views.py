@@ -38,7 +38,7 @@ class UserListView(views.APIView):
     List all users, or create a new user.
     """
 
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)

@@ -12,9 +12,7 @@ function Loader() {
         margin: "auto",
         display: "block",
       }}
-    >
-      <span className="sr-only">Loading...</span>
-    </Spinner>
+    />
   );
 }
 

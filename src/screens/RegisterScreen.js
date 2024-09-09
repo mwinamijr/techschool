@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 import FormContainer from "../components/FormContainer";
-import { registerUser } from "../features/user/userSlice";
+import { registerStudent } from "../features/user/userSlice";
 
 function RegisterScreen() {
   const [firstName, setFirstName] = useState("");
@@ -36,12 +36,11 @@ function RegisterScreen() {
       setMessage("Passwords do not match");
     } else {
       dispatch(
-        registerUser({
+        registerStudent({
           first_name: firstName,
           last_name: lastName,
           email: email,
           password: password,
-          is_student: true,
         })
       );
     }
@@ -49,7 +48,7 @@ function RegisterScreen() {
 
   return (
     <FormContainer>
-      <h1>Register User</h1>
+      <h1>Register Student</h1>
       {message && <Message variant="danger">{message}</Message>}
       {error && <Message variant="danger">{error}</Message>}
       {loading && <Loader />}
@@ -108,11 +107,6 @@ function RegisterScreen() {
             onChange={(e) => setConfirmPassword(e.target.value)}
           ></Form.Control>
         </Form.Group>
-        <Form.Group>
-          <Form.Check type="checkbox" id="isStudent" label="Is Student" />
-          <Form.Check type="checkbox" id="isTeacher" labe="Is Teacher" />
-        </Form.Group>
-
         <Button type="submit" variant="primary">
           Register
         </Button>

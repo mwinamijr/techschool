@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import UserListScreen from "./screens/userListScreen";
 
 function App() {
   return (
@@ -32,6 +33,8 @@ function App() {
               <Route path="/profile" element={<h1>Profile Page</h1>} />
               <Route path="/login" element={<LoginScreen />} />
               <Route path="/register" element={<RegisterScreen />} />
+
+              <Route path="/admin/user-list" element={<UserListScreen />} />
             </Routes>
           </div>
         </div>
