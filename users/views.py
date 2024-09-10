@@ -1,4 +1,4 @@
-from rest_framework import views
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,15 +6,13 @@ from rest_framework import status
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from django.http import Http404
+from django.contrib.auth.hashers import make_password
 
 from .models import CustomUser as User
 
 from .serializers import (
     UserSerializer,
     UserSerializerWithToken,
-    StudentSerializer,
-    TeacherSerializer,
 )
 
 
@@ -33,85 +31,92 @@ class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 
-class UserListView(views.APIView):
-    """
-    List all users, or create a new user.
-    """
+@api_view(["POST"])
+def registerUser(request):
+    data = request.data
+    print(data)
+    try:
+        user = User.objects.create(
+            first_name=data["first_name"],
+            last_name=data["last_name"],
+            email=data["email"],
+            is_teacher=data["is_teacher"],
+            is_student=data["is_student"],
+            password=make_password(data["password"]),
+        )
 
-    permission_classes = [IsAuthenticated]
-    def get(self, request, format=None):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
+        serializer = UserSerializerWithToken(user, many=False)
         return Response(serializer.data)
-
-    def post(self, request, format=None):
-        serializer = UserSerializer(data=request.data)
-
-        print(serializer.is_valid())
-        print(request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except:
+        message = {"detail": "User with this email already exists"}
+        return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetailView(views.APIView):
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def updateUserProfile(request):
+    user = request.user
+    serializer = UserSerializerWithToken(user, many=False)
 
-    # permission_classes = [IsAuthenticated]
-    def get_object(self, pk):
-        try:
-            return User.objects.get(pk=pk)
-        except User.DoesNotExist:
-            raise Http404
+    data = request.data
+    user.first_name = data["name"]
+    user.username = data["email"]
+    user.email = data["email"]
 
-    def get(self, request, pk, format=None):
-        user = self.get_object(pk)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+    if data["password"] != "":
+        user.password = make_password(data["password"])
 
-    def put(self, request, pk, format=None):
-        user = self.get_object(pk)
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    user.save()
 
-    def delete(self, request, pk, format=None):
-        user = self.get_object(pk)
-        user.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    return Response(serializer.data)
 
 
-class StudentListView(views.APIView):
-    """
-    Create a new student.
-    """
-
-    # permission_classes = [IsAuthenticated]
-    def post(self, request, format=None):
-        serializer = StudentSerializer(data=request.data)
-
-        print(serializer.is_valid())
-        print(request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def getUserProfile(request):
+    user = request.user
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
 
 
-class TeacherListView(views.APIView):
-    """
-    Create a new teacher.
-    """
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def getUsers(request):
+    users = User.objects.all()
+    serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
 
-    # permission_classes = [IsAuthenticated]
-    def post(self, request, format=None):
-        serializer = TeacherSerializer(data=request.data)
 
-        print(serializer.is_valid())
-        print(request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def getUserById(request, pk):
+    user = User.objects.get(id=pk)
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def updateUser(request, pk):
+    user = User.objects.get(id=pk)
+
+    data = request.data
+
+    user.first_name = data["name"]
+    user.username = data["email"]
+    user.email = data["email"]
+    user.is_staff = data["isAdmin"]
+
+    user.save()
+
+    serializer = UserSerializer(user, many=False)
+
+    return Response(serializer.data)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAdminUser])
+def deleteUser(request, pk):
+    userForDeletion = User.objects.get(id=pk)
+    userForDeletion.delete()
+    return Response("User was deleted")
