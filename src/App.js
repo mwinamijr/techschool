@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 import LoginScreen from "./screens/LoginScreen";
-import RegisterScreen from "./screens/RegisterScreen";
+import RegisterStudentScreen from "./screens/RegisterStudentScreen";
 import UserListScreen from "./screens/userListScreen";
 
 function App() {
@@ -32,7 +32,10 @@ function App() {
               <Route path="/orders" element={<h1>Orders Page</h1>} />
               <Route path="/profile" element={<h1>Profile Page</h1>} />
               <Route path="/login" element={<LoginScreen />} />
-              <Route path="/register" element={<RegisterScreen />} />
+              <Route
+                path="/register-student"
+                element={<RegisterStudentScreen />}
+              />
 
               <Route path="/admin/user-list" element={<UserListScreen />} />
             </Routes>

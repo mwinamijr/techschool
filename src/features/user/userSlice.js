@@ -62,6 +62,7 @@ const userSlice = createSlice({
       })
       .addCase(listUsers.rejected, (state, { payload }) => {
         const error = payload;
+        state.loading = false;
         state.error = error;
       });
   },
@@ -69,7 +70,7 @@ const userSlice = createSlice({
 
 export const loginUser = createAsyncThunk(
   "user/login",
-  async (user, thunkAPI) => {
+  async (_, user, thunkAPI) => {
     try {
       const config = {
         headers: {
@@ -83,14 +84,18 @@ export const loginUser = createAsyncThunk(
       );
       return data;
     } catch (error) {
-      return error.message;
+      if (!error.response.data.detail) {
+        return thunkAPI.rejectWithValue(error.message);
+      }
+
+      return thunkAPI.rejectWithValue(error.response.data.detail);
     }
   }
 );
 
 export const registerStudent = createAsyncThunk(
   "student/register",
-  async (user, thunkAPI) => {
+  async (_, user, thunkAPI) => {
     try {
       const config = {
         headers: {
@@ -98,18 +103,22 @@ export const registerStudent = createAsyncThunk(
         },
       };
       const { data } = await axios.post(
-        `${baseUrl}/api/students/`,
+        `${baseUrl}/api/users/register/`,
         user,
         config
       );
       return data;
     } catch (error) {
-      return error.message;
+      if (!error.response.data.detail) {
+        return thunkAPI.rejectWithValue(error.message);
+      }
+
+      return thunkAPI.rejectWithValue(error.response.data.detail);
     }
   }
 );
 
-export const listUsers = createAsyncThunk("usersList", async () => {
+export const listUsers = createAsyncThunk("usersList", async (_, thunkAPI) => {
   const user = getUserFromLocalStorage();
   try {
     const config = {
@@ -121,7 +130,11 @@ export const listUsers = createAsyncThunk("usersList", async () => {
     const { data } = await axios.get(`${baseUrl}/api/users/`, config);
     return data;
   } catch (error) {
-    return error.message;
+    if (!error.response.data.detail) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+
+    return thunkAPI.rejectWithValue(error.response.data.detail);
   }
 });
 
