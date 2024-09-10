@@ -39,6 +39,7 @@ const userSlice = createSlice({
         const error = payload;
         console.log(error);
         state.error = error;
+        state.loading = false;
       })
       .addCase(registerStudent.pending, (state) => {
         state.loading = true;
@@ -47,10 +48,26 @@ const userSlice = createSlice({
         const user = payload;
         state.loading = false;
         state.user = user;
+        addUserToLocalStorage(user);
       })
       .addCase(registerStudent.rejected, (state, { payload }) => {
         const error = payload;
         state.error = error;
+        state.loading = false;
+      })
+      .addCase(registerTeacher.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(registerTeacher.fulfilled, (state, { payload }) => {
+        const user = payload;
+        state.loading = false;
+        state.user = user;
+        addUserToLocalStorage(user);
+      })
+      .addCase(registerTeacher.rejected, (state, { payload }) => {
+        const error = payload;
+        state.error = error;
+        state.loading = false;
       })
       .addCase(listUsers.pending, (state) => {
         state.loading = true;
@@ -70,7 +87,7 @@ const userSlice = createSlice({
 
 export const loginUser = createAsyncThunk(
   "user/login",
-  async (_, user, thunkAPI) => {
+  async (user, thunkAPI) => {
     try {
       const config = {
         headers: {
@@ -95,7 +112,32 @@ export const loginUser = createAsyncThunk(
 
 export const registerStudent = createAsyncThunk(
   "student/register",
-  async (_, user, thunkAPI) => {
+  async (user, thunkAPI) => {
+    try {
+      const config = {
+        headers: {
+          "content-type": "application/json",
+        },
+      };
+      const { data } = await axios.post(
+        `${baseUrl}/api/users/register/`,
+        user,
+        config
+      );
+      return data;
+    } catch (error) {
+      if (!error.response.data.detail) {
+        return thunkAPI.rejectWithValue(error.message);
+      }
+
+      return thunkAPI.rejectWithValue(error.response.data.detail);
+    }
+  }
+);
+
+export const registerTeacher = createAsyncThunk(
+  "teacher/register",
+  async (user, thunkAPI) => {
     try {
       const config = {
         headers: {
