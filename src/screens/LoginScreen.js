@@ -59,16 +59,44 @@ function LoginScreen() {
           ></Form.Control>
         </Form.Group>
 
-        <Button type="submit" variant="primary">
-          Sign In
-        </Button>
+        <div className="py-3">
+          <Button type="submit" variant="primary">
+            Sign In
+          </Button>
+        </div>
       </Form>
 
       <Row className="py-3">
+        <div className="text-center text-muted p-1">
+          <i>If you are a student please register using this link</i>
+        </div>
         <Col>
-          New Customer?{" "}
-          <Link to={redirect ? `/register?redirect=${redirect}` : "/register"}>
-            Register
+          New Student?{" "}
+          <Link
+            to={
+              redirect
+                ? `/register-student?redirect=${redirect}`
+                : "/register-student"
+            }
+          >
+            Register as Student
+          </Link>
+        </Col>
+      </Row>
+      <Row className="py-3">
+        <div className="text-center text-muted p-1">
+          <i>If you are a teacher please register using this link</i>
+        </div>
+        <Col>
+          New Teacher?{" "}
+          <Link
+            to={
+              redirect
+                ? `/register-teacher?redirect=${redirect}`
+                : "/register-teacher"
+            }
+          >
+            Register as Teacher
           </Link>
         </Col>
       </Row>

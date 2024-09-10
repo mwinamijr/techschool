@@ -5,6 +5,7 @@ import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterStudentScreen from "./screens/RegisterStudentScreen";
+import RegisterTeacherScreen from "./screens/RegisterTeacherScreen";
 import UserListScreen from "./screens/userListScreen";
 
 function App() {
@@ -35,6 +36,10 @@ function App() {
               <Route
                 path="/register-student"
                 element={<RegisterStudentScreen />}
+              />
+              <Route
+                path="/register-teacher"
+                element={<RegisterTeacherScreen />}
               />
 
               <Route path="/admin/user-list" element={<UserListScreen />} />
