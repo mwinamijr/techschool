@@ -125,6 +125,24 @@ function RegisterScreen() {
           </Link>
         </Col>
       </Row>
+
+      <Row className="py-3">
+        <div className="text-center text-muted p-1">
+          <i>If you are a teacher please register using this link</i>
+        </div>
+        <Col>
+          New Teacher?{" "}
+          <Link
+            to={
+              redirect
+                ? `/register-teacher?redirect=${redirect}`
+                : "/register-teacher"
+            }
+          >
+            Register as Teacher
+          </Link>
+        </Col>
+      </Row>
     </FormContainer>
   );
 }
