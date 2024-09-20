@@ -111,6 +111,19 @@ const userSlice = createSlice({
         const error = payload;
         state.loading = false;
         state.error = error;
+      })
+      .addCase(deleteUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(deleteUser.fulfilled, (state, { payload }) => {
+        const user = payload;
+        console.log(user);
+        state.loading = false;
+      })
+      .addCase(deleteUser.rejected, (state, { payload }) => {
+        const error = payload;
+        state.loading = false;
+        state.error = error;
       });
   },
 });
@@ -252,6 +265,33 @@ export const updateUserProfile = createAsyncThunk(
       );
       return data;
     } catch (error) {
+      if (!error.response.data.detail) {
+        return thunkAPI.rejectWithValue(error.message);
+      }
+
+      return thunkAPI.rejectWithValue(error.response.data.detail);
+    }
+  }
+);
+
+export const deleteUser = createAsyncThunk(
+  "deleteUser",
+  async (id, thunkAPI) => {
+    const userInfo = getUserFromLocalStorage();
+    try {
+      const config = {
+        headers: {
+          "content-type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      const { data } = await axios.delete(
+        `${baseUrl}/api/users/delete/${id}/`,
+        config
+      );
+      return data;
+    } catch (error) {
+      console.log(error);
       if (!error.response.data.detail) {
         return thunkAPI.rejectWithValue(error.message);
       }

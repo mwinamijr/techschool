@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
-import { listUsers } from "../features/user/userSlice";
+import { listUsers, deleteUser } from "../features/user/userSlice";
 
 function UserListScreen() {
   const dispatch = useDispatch();
@@ -23,7 +23,7 @@ function UserListScreen() {
 
   const deleteHandler = (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      //dispatch(deleteUser(id));
+      dispatch(deleteUser(id));
     }
   };
 
@@ -52,7 +52,9 @@ function UserListScreen() {
             {users.map((user) => (
               <tr key={user.id}>
                 <td>{user.id}</td>
-                <td>{user.first_name}</td>
+                <td>
+                  {user.first_name} {user.last_name}{" "}
+                </td>
                 <td>{user.email}</td>
                 <td>
                   {user.is_admin ? (
