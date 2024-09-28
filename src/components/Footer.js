@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function Footer() {
   return (
-    <footer className="p-1">
+    <footer className="p-1 bg-light">
       <Row>
         <Col className="text-center py-3">
           Copyright &copy; {new Date().getFullYear()} Tech School. All rights

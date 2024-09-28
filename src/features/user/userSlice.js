@@ -39,7 +39,6 @@ const userSlice = createSlice({
       })
       .addCase(loginUser.rejected, (state, { payload }) => {
         const error = payload;
-        console.log(error);
         state.error = error;
         state.loading = false;
       })
@@ -117,7 +116,6 @@ const userSlice = createSlice({
       })
       .addCase(deleteUser.fulfilled, (state, { payload }) => {
         const user = payload;
-        console.log(user);
         state.loading = false;
       })
       .addCase(deleteUser.rejected, (state, { payload }) => {
@@ -235,7 +233,7 @@ export const getUserDetails = createAsyncThunk(
         },
       };
       const { data } = await axios.get(`${baseUrl}/api/users/${id}/`, config);
-      console.log(data);
+
       return data;
     } catch (error) {
       if (!error.response.data.detail) {
@@ -291,7 +289,6 @@ export const deleteUser = createAsyncThunk(
       );
       return data;
     } catch (error) {
-      console.log(error);
       if (!error.response.data.detail) {
         return thunkAPI.rejectWithValue(error.message);
       }
