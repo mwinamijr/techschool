@@ -1,45 +1,75 @@
 from django.db import models
-from users.models import CustomUser as User
-from lessons.models import Lesson, SubTopic
-
-QUESTION_TYPES = (
-    ("mcq", "Multiple Choice"),
-    ("fitb", "Fill in the Blank"),
-    ("truefalse", "True/False"),
-    ("essay", "Essay"),
-)
+from django.conf import settings
+from lessons.models import SubTopic
 
 
 class Activity(models.Model):
-    lesson = models.ForeignKey(
-        Lesson, on_delete=models.CASCADE, related_name="activities"
-    )
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    subtopic = models.ForeignKey(
+        SubTopic, related_name="activities", on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return self.title
 
 
 class Quiz(models.Model):
-    subtopic = models.ForeignKey(
-        SubTopic, on_delete=models.CASCADE, related_name="quizzes"
+    title = models.CharField(max_length=200)
+    activity = models.ForeignKey(
+        Activity, related_name="quizzes", on_delete=models.CASCADE
     )
-    title = models.CharField(max_length=255)
-    instructions = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.title
 
 
 class Question(models.Model):
-    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
-    question_type = models.CharField(max_length=20, choices=QUESTION_TYPES)
+    QUESTION_TYPE_CHOICES = (
+        ("mcq", "Multiple Choice"),
+        ("truefalse", "True/False"),
+        ("fitb", "Fill in the Blank"),
+        ("shortanswer", "Short Answer"),
+        ("essay", "Essay"),
+    )
+
+    quiz = models.ForeignKey(Quiz, related_name="questions", on_delete=models.CASCADE)
     text = models.TextField()
-    choices = models.JSONField(blank=True, null=True)  # for MCQ
-    correct_answer = models.TextField()  # could also use JSON
+    question_type = models.CharField(max_length=20, choices=QUESTION_TYPE_CHOICES)
+
+    def __str__(self):
+        return f"{self.quiz.title} - {self.text[:50]}"
+
+
+class Option(models.Model):
+    question = models.ForeignKey(
+        Question, related_name="options", on_delete=models.CASCADE
+    )
+    text = models.CharField(max_length=255)
+    is_correct = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.text
+
+
+class StudentAnswer(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    selected_option = models.ForeignKey(
+        Option, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    answered_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.question.id}"
 
 
 class Test(models.Model):
     title = models.CharField(max_length=255)
     topics = models.ManyToManyField("lessons.Topic")
     created_by = models.ForeignKey(
-        User, on_delete=models.SET_NULL, null=True, blank=True
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
     )
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()

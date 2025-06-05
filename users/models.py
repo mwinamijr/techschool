@@ -21,6 +21,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(
         max_length=100, blank=True, null=True, verbose_name="last name"
     )
+    username = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name="username"
+    )
     email = models.EmailField(_("email address"), unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="student")
     avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
