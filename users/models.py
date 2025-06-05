@@ -23,6 +23,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     email = models.EmailField(_("email address"), unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="student")
+    avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)
     date_joined = models.DateTimeField(default=timezone.now)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -33,4 +34,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
+        return str(self.email) if self.email else ""
