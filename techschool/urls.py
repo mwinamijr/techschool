@@ -25,6 +25,9 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", TemplateView.as_view(template_name="index.html")),
+    path("api/core/", include("api.core.urls")),
+    path("api/examinations/", include("api.examinations.urls")),
+    path("api/lessons/", include("api.lessons.urls")),
     path("api/users/", include("api.users.urls")),
     path("__debug__/", include(debug_toolbar.urls)),
 ]

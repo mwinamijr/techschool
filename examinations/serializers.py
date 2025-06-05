@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Activity, Quiz, Question, Option, StudentAnswer, QuizResult
+from .models import Activity, Quiz, Question, Option, StudentAnswer
 
 
 class OptionSerializer(serializers.ModelSerializer):
@@ -36,9 +36,3 @@ class StudentAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentAnswer
         fields = ["id", "user", "question", "selected_option", "answered_at"]
-
-
-class QuizResultSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = QuizResult
-        fields = ["id", "user", "quiz", "score", "taken_at"]

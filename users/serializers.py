@@ -6,9 +6,6 @@ from .models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
-    is_admin = serializers.SerializerMethodField(read_only=True)
-    is_teacher = serializers.SerializerMethodField(read_only=True)
-    is_student = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = CustomUser
@@ -19,18 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
             "middle_name",
             "last_name",
             "is_admin",
-            "is_teacher",
-            "is_student",
+            "role",
         ]
-
-    def get_is_admin(self, obj):
-        return obj.is_staff
-
-    def get_is_teacher(self, obj):
-        return obj.is_teacher
-
-    def get_is_student(self, obj):
-        return obj.is_student
 
 
 class UserSerializerWithToken(UserSerializer):
@@ -45,8 +32,7 @@ class UserSerializerWithToken(UserSerializer):
             "middle_name",
             "last_name",
             "is_admin",
-            "is_teacher",
-            "is_student",
+            "role",
             "token",
         ]
 

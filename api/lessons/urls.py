@@ -21,6 +21,6 @@ urlpatterns = [
     path("topics/<int:pk>/", TopicDetailView.as_view(), name="topic-detail"),
     path("subtopics/", SubTopicListView.as_view(), name="subtopic-list"),
     path("subtopics/<int:pk>/", SubTopicDetailView.as_view(), name="subtopic-detail"),
-    path("lessons/", LessonListView.as_view(), name="lesson-list"),
-    path("lessons/<int:pk>/", LessonDetailView.as_view(), name="lesson-detail"),
+    path("", LessonListView.as_view(), name="lesson-list"),
+    path("<int:pk>/", LessonDetailView.as_view(), name="lesson-detail"),
 ]
