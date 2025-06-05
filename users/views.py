@@ -40,6 +40,8 @@ def registerUser(request):
             first_name=data["first_name"],
             last_name=data["last_name"],
             email=data["email"],
+            username=data["email"],
+            phone_number=data["phone_number"],
             is_teacher=data["is_teacher"],
             is_student=data["is_student"],
             password=make_password(data["password"]),
@@ -50,6 +52,30 @@ def registerUser(request):
     except:
         message = {"detail": "User with this email already exists"}
         return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["PUT"])
+@permission_classes([IsAdminUser])
+def approve_teacher(request, pk):
+    try:
+        user = User.objects.get(id=pk, role="teacher")
+    except User.DoesNotExist:
+        return Response(
+            {"detail": "Teacher not found."}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    user.is_verified = True
+    user.save()
+    serializer = UserSerializer(user, many=False)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAdminUser])
+def list_unverified_teachers(request):
+    teachers = User.objects.filter(role="teacher", is_verified=False)
+    serializer = UserSerializer(teachers, many=True)
+    return Response(serializer.data)
 
 
 @api_view(["PUT"])

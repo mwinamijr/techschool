@@ -2,6 +2,8 @@ from django.urls import path
 from users.views import (
     MyTokenObtainPairView,
     registerUser,
+    approve_teacher,
+    list_unverified_teachers,
     getUserProfile,
     updateUserProfile,
     getUsers,
@@ -13,6 +15,9 @@ from users.views import (
 urlpatterns = [
     path("login/", MyTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("register/", registerUser, name="register"),
+    path("approve-teacher/<str:pk>/", approve_teacher, name="approve-teacher"),
+    path("unverified-teachers/", list_unverified_teachers, name="unverified-teachers"),
+    # User profile related paths
     path("profile/", getUserProfile, name="users-profile"),
     path("profile/update/", updateUserProfile, name="user-profile-update"),
     path("", getUsers, name="users"),

@@ -61,22 +61,14 @@ export const register = createAsyncThunk<
     email: string;
     phone: string;
     password: string;
-    isAdmin?: boolean;
+    isTeacher?: boolean;
     role?: string;
   },
   { rejectValue: string; state: { auth: AuthState } }
 >(
   "auth/register",
   async (
-    {
-      firstName,
-      lastName,
-      email,
-      phone,
-      password,
-      isAdmin,
-      role,
-    },
+    { firstName, lastName, email, phone, password, isTeacher },
     { rejectWithValue, getState }
   ) => {
     try {
@@ -96,8 +88,7 @@ export const register = createAsyncThunk<
           email,
           phone,
           password,
-          role,
-          isAdmin,
+          isTeacher,
         },
         config
       );

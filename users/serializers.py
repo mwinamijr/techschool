@@ -16,8 +16,12 @@ class UserSerializer(serializers.ModelSerializer):
             "first_name",
             "middle_name",
             "last_name",
+            "username",
+            "phone_number",
             "is_admin",
             "role",
+            "is_verified",
+            "avatar",
         ]
 
     def get_is_admin(self, obj):
@@ -29,16 +33,7 @@ class UserSerializerWithToken(UserSerializer):
 
     class Meta:
         model = CustomUser
-        fields = [
-            "id",
-            "email",
-            "first_name",
-            "middle_name",
-            "last_name",
-            "is_admin",
-            "role",
-            "token",
-        ]
+        fields = UserSerializer.Meta.fields + ["token"]
 
     def get_token(self, obj):
         token = RefreshToken.for_user(obj)
