@@ -7,11 +7,13 @@ export interface UserInfo {
   id: number;
   email: string;
   token: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  isAdmin?: boolean;
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
+  phone_number?: string;
   role?: string;
+  is_verified?: boolean;
+  is_active?: boolean;
 }
 
 interface AuthState {
@@ -56,39 +58,38 @@ export const login = createAsyncThunk<
 export const register = createAsyncThunk<
   UserInfo,
   {
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    middle_name?: string;
+    last_name: string;
     email: string;
-    phone: string;
+    phone_number: string;
     password: string;
-    isTeacher?: boolean;
-    role?: string;
+    role: "student" | "teacher";
   },
   { rejectValue: string; state: { auth: AuthState } }
 >(
   "auth/register",
   async (
-    { firstName, lastName, email, phone, password, isTeacher },
-    { rejectWithValue, getState }
+    { first_name, middle_name, last_name, email, phone_number, password, role },
+    { rejectWithValue }
   ) => {
     try {
-      const { auth } = getState();
       const config = {
         headers: {
           "Content-type": "application/json",
-          Authorization: `Bearer ${auth.userInfo?.token}`,
         },
       };
 
       const { data } = await axios.post(
-        `${djangoUrl}/api/users/users/`,
+        `${djangoUrl}/api/users/register/`,
         {
-          firstName,
-          lastName,
+          first_name,
+          middle_name,
+          last_name,
           email,
-          phone,
+          phone_number,
           password,
-          isTeacher,
+          role,
         },
         config
       );
