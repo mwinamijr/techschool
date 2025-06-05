@@ -11,17 +11,15 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     list_display = (
         "email",
+        "role",
         "is_staff",
         "is_active",
-        "is_student",
-        "is_teacher",
     )
     list_filter = (
         "email",
+        "role",
         "is_staff",
         "is_active",
-        "is_student",
-        "is_teacher",
     )
     fieldsets = (
         (
@@ -34,8 +32,6 @@ class CustomUserAdmin(UserAdmin):
                 "fields": (
                     "is_staff",
                     "is_active",
-                    "is_student",
-                    "is_teacher",
                 )
             },
         ),
@@ -50,12 +46,11 @@ class CustomUserAdmin(UserAdmin):
                     "middle_name",
                     "last_name",
                     "email",
+                    "role",
                     "password1",
                     "password2",
                     "is_staff",
                     "is_active",
-                    "is_student",
-                    "is_teacher",
                 ),
             },
         ),
