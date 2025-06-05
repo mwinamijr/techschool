@@ -6,6 +6,7 @@ from .models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_admin = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = CustomUser
@@ -18,6 +19,9 @@ class UserSerializer(serializers.ModelSerializer):
             "is_admin",
             "role",
         ]
+
+    def get_is_admin(self, obj):
+        return obj.is_staff
 
 
 class UserSerializerWithToken(UserSerializer):

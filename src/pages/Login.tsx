@@ -1,23 +1,65 @@
+import { useState, useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { login } from "../features/authSlice";
+import { useNavigate } from "react-router-dom";
+
 export default function Login() {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <form className="bg-white p-6 rounded shadow-md space-y-4 w-96">
-          <h2 className="text-xl font-bold">Login</h2>
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full border p-2 rounded"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full border p-2 rounded"
-          />
-          <button className="bg-orange-500 text-white w-full py-2 rounded hover:bg-orange-600">
-            Sign In
-          </button>
-        </form>
-      </div>
-    );
-  }
-  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const { userInfo, loading, error } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (userInfo) {
+      navigate("/dashboard");
+    }
+  }, [userInfo, navigate]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    dispatch(login({ email, password }));
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-6 rounded shadow-md space-y-4 w-96"
+      >
+        <h2 className="text-xl font-bold text-center">Login</h2>
+
+        {error && <div className="text-red-500 text-sm">{error}</div>}
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full border p-2 rounded"
+          required
+        />
+
+        <button
+          type="submit"
+          disabled={loading}
+          className={`bg-orange-500 text-white w-full py-2 rounded hover:bg-orange-600 ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
+      </form>
+    </div>
+  );
+}
