@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "debug_toolbar",
+    "core.apps.CoreConfig",
     "users.apps.UsersConfig",
     "lessons.apps.LessonsConfig",
     "examinations.apps.ExaminationsConfig",
