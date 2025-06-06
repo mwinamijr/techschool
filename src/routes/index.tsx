@@ -10,6 +10,7 @@ import Unauthorized from "../pages/Unauthorized";
 import NotFound from "../pages/NotFound";
 import ProtectedRoute from "./ProtectedRoute";
 import UsersList from "../pages/users/UsersList";
+import UserDetails from "../pages/users/UserDetails";
 
 export const router = createBrowserRouter([
   {
@@ -49,7 +50,10 @@ export const router = createBrowserRouter([
       // Admin-only route
       {
         element: <ProtectedRoute allowedRoles={["admin"]} />,
-        children: [{ path: "/users", element: <UsersList /> }],
+        children: [
+          { path: "/users", element: <UsersList /> },
+          { path: "/users/:id", element: <UserDetails /> },
+        ],
       },
     ],
   },

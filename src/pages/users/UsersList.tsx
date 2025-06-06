@@ -66,7 +66,7 @@ export default function UsersList() {
                   <tr
                     key={user.id}
                     className="hover:bg-gray-100 cursor-pointer"
-                    onClick={() => navigate(`/dashboard/users/${user.id}`)}
+                    onClick={() => navigate(`/users/${user.id}`)}
                   >
                     <td className="py-2 px-4">{user.first_name}</td>
                     <td className="py-2 px-4">{user.last_name}</td>
@@ -79,9 +79,7 @@ export default function UsersList() {
                     >
                       <button
                         className="text-blue-500 hover:underline"
-                        onClick={() =>
-                          navigate(`/dashboard/users/${user.id}/edit`)
-                        }
+                        onClick={() => navigate(`/users/${user.id}/edit`)}
                       >
                         <PencilSquareIcon className="w-4 h-4 text-blue-500" />
                       </button>
