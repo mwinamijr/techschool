@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { login } from "../features/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -21,7 +22,20 @@ export default function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(login({ email, password }));
+    if (rememberMe) {
+      localStorage.setItem("rememberEmail", email);
+    } else {
+      localStorage.removeItem("rememberEmail");
+    }
   };
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("rememberEmail");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
 
   return (
     <div className="flex items-center justify-center min-h-screen">
@@ -50,6 +64,23 @@ export default function Login() {
           required
         />
 
+        <div className="flex justify-between items-center text-sm text-gray-600">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+            />
+            <span>Remember me</span>
+          </label>
+          <Link
+            to="/forgot-password"
+            className="text-orange-500 hover:underline"
+          >
+            Forgot Password?
+          </Link>
+        </div>
+
         <button
           type="submit"
           disabled={loading}
@@ -59,6 +90,13 @@ export default function Login() {
         >
           {loading ? "Signing in..." : "Sign In"}
         </button>
+
+        <div className="text-center text-sm">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-orange-500 hover:underline">
+            Sign Up
+          </Link>
+        </div>
       </form>
     </div>
   );

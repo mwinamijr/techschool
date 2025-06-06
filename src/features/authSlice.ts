@@ -10,6 +10,7 @@ export interface UserInfo {
   first_name?: string;
   middle_name?: string;
   last_name?: string;
+  username?: string;
   phone_number?: string;
   role?: string;
   is_verified?: boolean;
@@ -61,6 +62,7 @@ export const register = createAsyncThunk<
     first_name: string;
     middle_name?: string;
     last_name: string;
+    username?: string;
     email: string;
     phone_number: string;
     password: string;
@@ -70,7 +72,16 @@ export const register = createAsyncThunk<
 >(
   "auth/register",
   async (
-    { first_name, middle_name, last_name, email, phone_number, password, role },
+    {
+      first_name,
+      middle_name,
+      last_name,
+      username,
+      email,
+      phone_number,
+      password,
+      role,
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -86,6 +97,7 @@ export const register = createAsyncThunk<
           first_name,
           middle_name,
           last_name,
+          username,
           email,
           phone_number,
           password,
@@ -94,6 +106,7 @@ export const register = createAsyncThunk<
         config
       );
 
+      localStorage.setItem("userInfo", JSON.stringify(data));
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error));

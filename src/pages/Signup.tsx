@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { register } from "../features/authSlice";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Signup() {
   const [form, setForm] = useState({
     first_name: "",
     middle_name: "",
     last_name: "",
+    username: "",
     email: "",
     phone_number: "",
     password: "",
@@ -25,17 +26,16 @@ export default function Signup() {
   const { userInfo, loading, error } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (userInfo) {
-      navigate("/dashboard");
-    }
+    if (userInfo) navigate("/dashboard");
   }, [userInfo, navigate]);
 
-  // Validate form inputs
+  const validatePhone = (value: string) => /^\+255\d{9}$/.test(value.trim());
+
+  const validateEmail = (value: string) => /\S+@\S+\.\S+/.test(value.trim());
+
   useEffect(() => {
-    const isPhoneValid =
-      /^0\d{9}$/.test(form.phone_number) ||
-      /^\+255\d{9}$/.test(form.phone_number);
-    const isEmailValid = /\S+@\S+\.\S+/.test(form.email);
+    const isPhoneValid = validatePhone(form.phone_number);
+    const isEmailValid = validateEmail(form.email);
     const allFilled =
       form.first_name &&
       form.last_name &&
@@ -49,27 +49,55 @@ export default function Signup() {
     setFormValid(
       allFilled && !passwordMismatch && isPhoneValid && isEmailValid
     );
-  }, [form]);
+  }, [form, passwordMismatch]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    if (name === "phone_number") {
+      // Automatically prefix +255 if user starts with 0 or nothing
+      let formatted = value;
+      if (value.startsWith("0")) {
+        formatted = "+255" + value.substring(1);
+      } else if (!value.startsWith("+255")) {
+        formatted = "+255" + value;
+      }
+      setForm((prev) => ({ ...prev, [name]: formatted }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
-  const togglePassword = () => {
-    setShowPassword((prev) => !prev);
-  };
+  const togglePassword = () => setShowPassword((prev) => !prev);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordMismatch) {
       dispatch(register(form));
     }
+  };
+
+  const getInputClass = (name: keyof typeof form) => {
+    const value = form[name].trim();
+    const isInvalid =
+      (name === "email" && !validateEmail(value)) ||
+      (name === "phone_number" && !validatePhone(value)) ||
+      (!value && name !== "middle_name");
+
+    const isValid =
+      (name === "email" && validateEmail(value)) ||
+      (name === "phone_number" && validatePhone(value)) ||
+      (value && name !== "middle_name");
+
+    return `w-full p-2 rounded border ${
+      isInvalid
+        ? "border-red-500"
+        : isValid
+        ? "border-green-500"
+        : "border-gray-300"
+    }`;
   };
 
   return (
@@ -81,67 +109,77 @@ export default function Signup() {
         <h2 className="text-xl font-bold text-center">Sign Up</h2>
 
         {error && <div className="text-red-500 text-sm">{error}</div>}
-        {passwordMismatch && (
-          <div className="text-red-500 text-sm">Passwords do not match</div>
-        )}
 
         <input
           type="text"
-          name="first_name"
           placeholder="First Name"
+          name="first_name"
           value={form.first_name}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className={getInputClass("first_name")}
           required
         />
 
         <input
           type="text"
+          placeholder="Middle Name"
           name="middle_name"
-          placeholder="Middle Name (optional)"
           value={form.middle_name}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className={getInputClass("middle_name")}
         />
 
         <input
           type="text"
-          name="last_name"
           placeholder="Last Name"
+          name="last_name"
           value={form.last_name}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className={getInputClass("last_name")}
           required
+        />
+
+        <input
+          type="text"
+          placeholder="Username"
+          name="username"
+          value={form.username}
+          onChange={handleChange}
+          className={getInputClass("username")}
         />
 
         <input
           type="email"
-          name="email"
           placeholder="Email"
+          name="email"
           value={form.email}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className={getInputClass("email")}
           required
         />
 
         <input
           type="tel"
           name="phone_number"
-          placeholder="Phone Number (e.g. 0712345678 or +255712345678)"
+          placeholder="+255712345678"
           value={form.phone_number}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className={getInputClass("phone_number")}
           required
         />
+
+        {passwordMismatch && (
+          <div className="text-red-500 text-sm">Passwords do not match</div>
+        )}
 
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
-            name="password"
             placeholder="Password"
+            name="password"
             value={form.password}
             onChange={handleChange}
-            className="w-full border p-2 pr-10 rounded"
+            className={`${getInputClass("password")} pr-10`}
             required
           />
           <button
@@ -150,20 +188,20 @@ export default function Signup() {
             className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600"
           >
             {showPassword ? (
-              <EyeSlashIcon className="h-5 w-5" />
+              <EyeSlashIcon className="h-4 w-4" />
             ) : (
-              <EyeIcon className="h-5 w-5" />
+              <EyeIcon className="h-4 w-4" />
             )}
           </button>
         </div>
 
         <input
           type={showPassword ? "text" : "password"}
-          name="confirmPassword"
           placeholder="Confirm Password"
+          name="confirmPassword"
           value={form.confirmPassword}
           onChange={handleChange}
-          className="w-full border p-2 rounded"
+          className={getInputClass("confirmPassword")}
           required
         />
 
@@ -186,6 +224,13 @@ export default function Signup() {
         >
           {loading ? "Signing up..." : "Sign Up"}
         </button>
+
+        <div className="text-sm text-center mt-2">
+          Already have an account?{" "}
+          <Link to="/login" className="text-orange-600 hover:underline">
+            Sign In
+          </Link>
+        </div>
       </form>
     </div>
   );
