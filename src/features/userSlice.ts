@@ -35,7 +35,18 @@ export const fetchUsers = createAsyncThunk<User[]>(
   "users/fetch",
   async (_, thunkAPI) => {
     try {
-      const { data } = await axios.get(`${djangoUrl}/api/users/`);
+      const { getState } = thunkAPI;
+      const {
+        auth: { userInfo },
+      } = getState() as { auth: { userInfo: { token: string } } };
+      console.log(userInfo.token);
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      const { data } = await axios.get(`${djangoUrl}/api/users/`, config);
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));
