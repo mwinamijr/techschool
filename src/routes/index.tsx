@@ -33,28 +33,23 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute allowedRoles={["admin", "teacher", "student"]} />,
     children: [
+      { path: "/dashboard", element: <Dashboard /> },
+      // Public to all authenticated users
+      { path: "/examinations", element: <Examinations /> },
+
+      // Route for teachers only
       {
-        path: "/dashboard",
-        element: <Dashboard />,
+        element: <ProtectedRoute allowedRoles={["teacher"]} />,
         children: [
-          // Nested route protected for teachers
-          {
-            element: <ProtectedRoute allowedRoles={["teacher"]} />,
-            children: [
-              { path: "lessons", element: <Lessons /> },
-              { path: "lessons/:lessonId", element: <LessonDetails /> },
-            ],
-          },
-
-          // Public to all authenticated users
-          { path: "examinations", element: <Examinations /> },
-
-          // Admin-only route
-          {
-            element: <ProtectedRoute allowedRoles={["admin"]} />,
-            children: [{ path: "users", element: <UsersList /> }],
-          },
+          { path: "/lessons", element: <Lessons /> },
+          { path: "/lessons/:lessonId", element: <LessonDetails /> },
         ],
+      },
+
+      // Admin-only route
+      {
+        element: <ProtectedRoute allowedRoles={["admin"]} />,
+        children: [{ path: "/users", element: <UsersList /> }],
       },
     ],
   },
