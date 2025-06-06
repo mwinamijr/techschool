@@ -2,27 +2,49 @@ import { useSelector } from "react-redux";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import { useAppDispatch } from "../../app/hooks";
 import { useEffect } from "react";
-import { fetchUsers } from "../../features/userSlice";
+import { deleteUser, fetchUsers } from "../../features/userSlice";
 import { useNavigate } from "react-router-dom";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
+import Spinner from "../../components/Spinner";
+import { toast } from "react-toastify";
 
 export default function UsersList() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { users, loading, error } = useSelector((state: any) => state.getUsers);
+  const { users, loading, error, deleteLoading, deleteError, successDelete } =
+    useSelector((state: any) => state.getUsers);
 
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (successDelete) {
+      toast.success("User deleted successfully.");
+      dispatch(fetchUsers()); // Optionally refresh
+    }
+  }, [successDelete, deleteError, dispatch]);
+
+  const handleDeleteUser = (userId: number) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      dispatch(deleteUser(userId));
+    }
+  };
 
   return (
     <DashboardLayout>
       <div className="p-6">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Users List</h1>
 
-        {loading && <p>Loading users...</p>}
+        {loading && <Spinner />}
         {error && <p className="text-red-500">{error}</p>}
+        {deleteError && (
+          <p className="text-red-500 pb-4">
+            Can not delete user! <br />
+            {deleteError}
+          </p>
+        )}
 
         {!loading && !error && users.length === 0 && <p>No users found.</p>}
 
@@ -53,7 +75,7 @@ export default function UsersList() {
                     <td className="py-2 px-4 capitalize">{user.role}</td>
                     <td
                       className="py-2 px-4 flex gap-2"
-                      onClick={(e) => e.stopPropagation()} // Prevent row click
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <button
                         className="text-blue-500 hover:underline"
@@ -65,9 +87,13 @@ export default function UsersList() {
                       </button>
                       <button
                         className="text-red-500 hover:underline"
-                        onClick={() => console.log("Delete user", user.id)}
+                        onClick={() => handleDeleteUser(user.id)}
                       >
-                        <TrashIcon className="w-4 h-4 text-red-500" />
+                        {deleteLoading ? (
+                          <div className="w-4 h-4 animate-spin border-2 border-t-transparent border-red-500 rounded-full" />
+                        ) : (
+                          <TrashIcon className="w-4 h-4 text-red-500" />
+                        )}
                       </button>
                     </td>
                   </tr>

@@ -20,6 +20,9 @@ interface UserState {
   profile: User | null;
   loading: boolean;
   error: string | null;
+  deleteLoading?: boolean;
+  deleteError?: string | null;
+  successDelete?: boolean;
 }
 
 const initialState: UserState = {
@@ -27,6 +30,9 @@ const initialState: UserState = {
   profile: null,
   loading: false,
   error: null,
+  deleteLoading: false,
+  deleteError: null,
+  successDelete: false,
 };
 
 // Async Thunks
@@ -39,7 +45,7 @@ export const fetchUsers = createAsyncThunk<User[]>(
       const {
         auth: { userInfo },
       } = getState() as { auth: { userInfo: { token: string } } };
-      console.log(userInfo.token);
+
       const config = {
         headers: {
           "Content-type": "application/json",
@@ -112,12 +118,23 @@ export const deleteUser = createAsyncThunk<
   number,
   number,
   { rejectValue: string }
->("users/delete", async (id, { rejectWithValue }) => {
+>("users/delete", async (id, thunkAPI) => {
   try {
-    await axios.delete(`${djangoUrl}/api/users/${id}/`);
+    const { getState } = thunkAPI;
+    const {
+      auth: { userInfo },
+    } = getState() as { auth: { userInfo: { token: string } } };
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    await axios.delete(`${djangoUrl}/api/users/${id}/`, config);
     return id;
   } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+    return thunkAPI.rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -129,6 +146,9 @@ const userSlice = createSlice({
   reducers: {
     clearUserError(state) {
       state.error = null;
+    },
+    clearSuccessDelete(state) {
+      state.successDelete = false;
     },
   },
   extraReducers: (builder) => {
@@ -164,11 +184,23 @@ const userSlice = createSlice({
         if (idx >= 0) state.users[idx] = action.payload;
       })
 
+      .addCase(deleteUser.pending, (state) => {
+        state.deleteLoading = true;
+        state.deleteError = null;
+        state.successDelete = false;
+      })
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.users = state.users.filter((u) => u.id !== action.payload);
+        state.deleteLoading = false;
+        state.successDelete = true;
+      })
+      .addCase(deleteUser.rejected, (state, action) => {
+        state.deleteLoading = false;
+        state.deleteError = action.payload as string;
+        state.successDelete = false;
       });
   },
 });
 
-export const { clearUserError } = userSlice.actions;
+export const { clearUserError, clearSuccessDelete } = userSlice.actions;
 export default userSlice.reducer;
