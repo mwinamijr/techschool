@@ -19,6 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "phone_number",
             "is_admin",
+            "gender",
             "role",
             "is_verified",
             "avatar",

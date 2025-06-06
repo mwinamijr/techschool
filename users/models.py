@@ -8,6 +8,10 @@ from .managers import CustomUserManager
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    GENDER_CHOICES = (
+        ("male", "Male"),
+        ("female", "Female"),
+    )
     ROLE_CHOICES = (
         ("student", "Student"),
         ("teacher", "Teacher"),
@@ -39,6 +43,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         unique=True,
         verbose_name="phone number",
     )
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default="male")
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default="student")
     is_verified = models.BooleanField(default=False)
     avatar = models.ImageField(upload_to="avatars/", null=True, blank=True)

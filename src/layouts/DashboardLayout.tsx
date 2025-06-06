@@ -6,9 +6,7 @@ import {
   HomeIcon,
   UserGroupIcon,
   Cog6ToothIcon,
-  ArrowRightOnRectangleIcon,
   BellIcon,
-  UserCircleIcon,
   ArrowDownIcon,
   BookOpenIcon,
   PencilIcon,
@@ -17,6 +15,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../features/authSlice"; // Make sure you have this action
+import userImage from "../assets/user_male.jpg";
 
 interface Props {
   children: ReactNode;
@@ -120,7 +119,11 @@ export default function DashboardLayout({ children }: Props) {
                 onClick={() => setDropdownOpen((prev) => !prev)}
                 className="flex items-center space-x-2 hover:bg-gray-100 rounded-full p-1"
               >
-                <UserCircleIcon className="w-8 h-8 text-orange-500" />
+                <img
+                  src={userInfo?.avatar || userImage}
+                  alt="User Avatar"
+                  className="w-8 h-8 rounded-full hidden md:inline object-cover"
+                />
                 <span className="hidden md:inline text-gray-700 text-sm font-medium">
                   {userInfo?.username}
                 </span>
@@ -130,7 +133,7 @@ export default function DashboardLayout({ children }: Props) {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-md z-50">
                   <Link
-                    to="/profile"
+                    to={`/users/${userInfo?.id}`}
                     className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
                     onClick={() => setDropdownOpen(false)}
                   >
