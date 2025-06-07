@@ -90,7 +90,7 @@ export default function DashboardLayout({ children }: Props) {
   };
 
   return (
-    <div className="flex overflow-hidden">
+    <div className="flex h-screen overflow-hidden">
       {/* Sidebar - Desktop */}
       <aside className="hidden md:flex md:flex-col w-64 bg-white shadow-lg p-4 space-y-4">
         <div className="text-2xl font-bold text-orange-500 mb-6">
@@ -189,7 +189,9 @@ export default function DashboardLayout({ children }: Props) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-4 bg-gray-100">{children}</main>
+        <main className="flex-1 overflow-y-auto p-4 bg-gray-100">
+          {children}
+        </main>
       </div>
     </div>
   );

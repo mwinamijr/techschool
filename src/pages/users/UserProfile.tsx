@@ -6,6 +6,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import Spinner from "../../components/Spinner";
 import TabButton from "../../components/TabButton";
 import userImage from "../../assets/user_male.jpg";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 
 export default function UserProfile() {
   const dispatch = useAppDispatch();
@@ -17,6 +18,7 @@ export default function UserProfile() {
   const [tab, setTab] = useState<"profile" | "settings" | "password">(
     "profile"
   );
+
   const [formData, setFormData] = useState({
     first_name: "",
     middle_name: "",
@@ -26,10 +28,24 @@ export default function UserProfile() {
     phone_number: "",
     gender: "",
   });
+
   const [passwords, setPasswords] = useState({
     newPassword: "",
     confirmPassword: "",
   });
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordMismatch, setPasswordMismatch] = useState(false);
+
+  // Auto-check for password mismatch whenever passwords change
+  useEffect(() => {
+    const mismatch =
+      passwords.newPassword.trim() &&
+      passwords.confirmPassword.trim() &&
+      passwords.newPassword !== passwords.confirmPassword;
+
+    setPasswordMismatch(mismatch);
+  }, [passwords]);
 
   useEffect(() => {
     dispatch(fetchProfile());
@@ -48,6 +64,25 @@ export default function UserProfile() {
       });
     }
   }, [profile]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+
+    if (name === "phone_number") {
+      // Automatically prefix +255 if user starts with 0 or nothing
+      let formatted = value;
+      if (value.startsWith("0")) {
+        formatted = "+255" + value.substring(1);
+      } else if (!value.startsWith("+255")) {
+        formatted = "+255" + value;
+      }
+      setFormData((prev) => ({ ...prev, [name]: formatted }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,20 +121,30 @@ export default function UserProfile() {
 
   const handlePasswordReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!passwords.newPassword || !passwords.confirmPassword) {
-      alert("Please fill out both password fields.");
+
+    if (passwordMismatch) {
       return;
     }
-    if (passwords.newPassword !== passwords.confirmPassword) {
-      alert("Passwords do not match.");
-      return;
+
+    try {
+      await dispatch(
+        updateProfile({
+          updates: {
+            password: passwords.newPassword,
+          },
+        })
+      ).unwrap();
+
+      alert("Password updated successfully.");
+      setPasswords({ newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      alert("Failed to update password. Please try again.");
     }
-    // Replace this with your password update dispatch
-    alert("Password changed successfully. (Hook to dispatch when ready)");
   };
 
-  const validatePhone = (value: string) => /^\+255\d{9}$/.test(value.trim());
+  const togglePassword = () => setShowPassword((prev) => !prev);
 
+  const validatePhone = (value: string) => /^\+255\d{9}$/.test(value.trim());
   const validateEmail = (value: string) => /\S+@\S+\.\S+/.test(value.trim());
 
   const getInputClass = (name: keyof typeof formData) => {
@@ -123,9 +168,25 @@ export default function UserProfile() {
     }`;
   };
 
+  const getPasswordInputClass = (name: keyof typeof passwords) => {
+    const value = passwords[name] ?? "";
+
+    const isInvalid =
+      !value.trim() || (passwordMismatch && name === "confirmPassword");
+    const isValid = value.trim() && !isInvalid;
+
+    return `w-full p-2 rounded border ${
+      isInvalid
+        ? "border-red-500"
+        : isValid
+        ? "border-green-500"
+        : "border-gray-300"
+    }`;
+  };
+
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-4xl mx-auto">
+      <div className="p-6 w-full h-full md:max-w-full">
         <h1 className="text-3xl font-bold text-gray-800 mb-6">User Profile</h1>
 
         {loading && <Spinner />}
@@ -191,91 +252,42 @@ export default function UserProfile() {
                 onSubmit={handleUpdate}
                 className="bg-white p-6 rounded shadow space-y-4"
               >
-                <div>
-                  <label className="block font-medium mb-1">Username</label>
-                  <input
-                    type="text"
-                    className={getInputClass("username")}
-                    value={formData.username}
-                    onChange={(e) =>
-                      setFormData({ ...formData, username: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1">First Name</label>
-                  <input
-                    type="text"
-                    className={getInputClass("first_name")}
-                    value={formData.first_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, first_name: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1">Middle Name</label>
-                  <input
-                    type="text"
-                    className={getInputClass("middle_name")}
-                    value={formData.middle_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, middle_name: e.target.value })
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1">Last Name</label>
-                  <input
-                    type="text"
-                    className={getInputClass("last_name")}
-                    value={formData.last_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, last_name: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1">Email</label>
-                  <input
-                    type="email"
-                    className={getInputClass("email")}
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block font-medium mb-1">Phone Number</label>
-                  <input
-                    type="text"
-                    className={getInputClass("phone_number")}
-                    value={formData.phone_number}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone_number: e.target.value })
-                    }
-                    required
-                  />
-                </div>
+                {[
+                  "username",
+                  "first_name",
+                  "middle_name",
+                  "last_name",
+                  "email",
+                  "phone_number",
+                ].map((field) => (
+                  <div key={field}>
+                    <label className="block font-medium mb-1 capitalize">
+                      {field.replace("_", " ")}
+                    </label>
+                    <input
+                      name={field}
+                      type="text"
+                      className={getInputClass(field as keyof typeof formData)}
+                      value={formData[field as keyof typeof formData]}
+                      onChange={handleInputChange}
+                      required={field !== "middle_name"}
+                    />
+                  </div>
+                ))}
+
                 <div>
                   <label className="block font-medium mb-1">Gender</label>
                   <select
                     name="gender"
                     value={formData.gender}
-                    onChange={(e) =>
-                      setFormData({ ...formData, gender: e.target.value })
-                    }
+                    onChange={handleInputChange}
                     className="w-full border p-2 rounded"
                   >
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                   </select>
                 </div>
+
                 <button
                   type="submit"
                   disabled={loading}
@@ -291,11 +303,17 @@ export default function UserProfile() {
                 onSubmit={handlePasswordReset}
                 className="bg-white p-6 rounded shadow space-y-4"
               >
-                <div>
+                {passwordMismatch && (
+                  <div className="text-red-500 text-sm">
+                    Passwords do not match
+                  </div>
+                )}
+
+                <div className="relative">
                   <label className="block font-medium mb-1">New Password</label>
                   <input
-                    type="password"
-                    className={getInputClass("first_name")}
+                    type={showPassword ? "text" : "password"}
+                    className={`${getPasswordInputClass("newPassword")} pr-10`}
                     value={passwords.newPassword}
                     onChange={(e) =>
                       setPasswords({
@@ -305,14 +323,26 @@ export default function UserProfile() {
                     }
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={togglePassword}
+                    className="absolute right-2 top-1/2 transform -translate-y-1 text-gray-600"
+                  >
+                    {showPassword ? (
+                      <EyeSlashIcon className="h-4 w-4" />
+                    ) : (
+                      <EyeIcon className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
+
                 <div>
                   <label className="block font-medium mb-1">
                     Confirm Password
                   </label>
                   <input
-                    type="password"
-                    className={getInputClass("first_name")}
+                    type={showPassword ? "text" : "password"}
+                    className={getPasswordInputClass("confirmPassword")}
                     value={passwords.confirmPassword}
                     onChange={(e) =>
                       setPasswords({
@@ -323,11 +353,13 @@ export default function UserProfile() {
                     required
                   />
                 </div>
+
                 <button
                   type="submit"
                   className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
+                  disabled={loading || passwordMismatch}
                 >
-                  Reset Password
+                  {loading ? "Updating..." : "Update Password"}
                 </button>
               </form>
             )}
