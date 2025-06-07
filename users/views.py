@@ -107,24 +107,6 @@ class UserDetailView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-    def put(self, request, pk):
-        user = get_object_or_404(User, id=pk)
-        data = request.data
-
-        user.first_name = data.get("first_name", user.first_name)
-        user.middle_name = data.get("middle_name", user.middle_name)
-        user.last_name = data.get("last_name", user.last_name)
-        user.username = data.get("username", user.username)
-        user.email = data.get("email", user.email)
-        user.gender = data.get("gender", user.gender)
-        user.role = data.get("role", user.role)
-        user.phone_number = data.get("phone_number", user.phone_number)
-        user.is_staff = data.get("is_admin", user.is_staff)
-
-        user.save()
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
-
     def delete(self, request, pk):
         user = get_object_or_404(User, id=pk)
         user.delete()

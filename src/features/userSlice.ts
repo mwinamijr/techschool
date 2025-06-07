@@ -169,14 +169,27 @@ export const approveTeacher = createAsyncThunk<
   User,
   number,
   { rejectValue: string }
->("users/approveTeacher", async (teacherId, { rejectWithValue }) => {
+>("users/approveTeacher", async (teacherId, thunkAPI) => {
   try {
-    const { data } = await axios.post(
-      `${djangoUrl}/api/users/teachers/${teacherId}/approve/`
+    const { getState } = thunkAPI;
+    const {
+      auth: { userInfo },
+    } = getState() as { auth: { userInfo: { token: string } } };
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    console.log(config);
+    const { data } = await axios.put(
+      `${djangoUrl}/api/users/teachers/${teacherId}/approve/`,
+      config
     );
     return data;
   } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
+    return thunkAPI.rejectWithValue(getErrorMessage(error));
   }
 });
 
@@ -271,9 +284,17 @@ const userSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      .addCase(approveTeacher.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(approveTeacher.fulfilled, (state, action) => {
-        const idx = state.users.findIndex((u) => u.id === action.payload.id);
-        if (idx >= 0) state.users[idx] = action.payload;
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(approveTeacher.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       })
 
       .addCase(updateProfile.pending, (state) => {
