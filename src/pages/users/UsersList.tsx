@@ -3,7 +3,7 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import { useAppDispatch } from "../../app/hooks";
 import { useEffect } from "react";
 import { deleteUser, fetchUsers } from "../../features/userSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
@@ -42,7 +42,15 @@ export default function UsersList() {
         ]}
       />
       <div className="p-6">
-        <h1 className="text-3xl font-bold mb-4 text-gray-800">Users List</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold mb-4 text-gray-800">Users List</h1>
+          <Link
+            to="/users/unverified-teachers"
+            className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 hover:text-black"
+          >
+            View Unverified Teachers
+          </Link>
+        </div>
 
         {loading && <Spinner />}
         {error && <p className="text-red-500">{error}</p>}

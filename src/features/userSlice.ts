@@ -143,8 +143,20 @@ export const fetchUnverifiedTeachers = createAsyncThunk<User[]>(
   "users/fetchUnverifiedTeachers",
   async (_, thunkAPI) => {
     try {
+      const { getState } = thunkAPI;
+      const {
+        auth: { userInfo },
+      } = getState() as { auth: { userInfo: { token: string } } };
+
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
       const { data } = await axios.get(
-        `${djangoUrl}/api/users/teachers/unverified/`
+        `${djangoUrl}/api/users/teachers/unverified/`,
+        config
       );
       return data;
     } catch (error) {
@@ -246,8 +258,17 @@ const userSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      .addCase(fetchUnverifiedTeachers.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchUnverifiedTeachers.fulfilled, (state, action) => {
+        state.loading = false;
         state.users = action.payload;
+      })
+      .addCase(fetchUnverifiedTeachers.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       })
 
       .addCase(approveTeacher.fulfilled, (state, action) => {
@@ -266,11 +287,6 @@ const userSlice = createSlice({
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })
-
-      .addCase(updateUser.fulfilled, (state, action) => {
-        const idx = state.users.findIndex((u) => u.id === action.payload.id);
-        if (idx >= 0) state.users[idx] = action.payload;
       })
 
       .addCase(deleteUser.pending, (state) => {

@@ -12,6 +12,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import UsersList from "../pages/users/UsersList";
 import UserDetails from "../pages/users/UserDetails";
 import UserProfile from "../pages/users/UserProfile";
+import UnverifiedTeachersList from "../pages/users/UnverifiedTeachers";
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +57,10 @@ export const router = createBrowserRouter([
         children: [
           { path: "/users", element: <UsersList /> },
           { path: "/users/:id", element: <UserDetails /> },
+          {
+            path: "/users/unverified-teachers",
+            element: <UnverifiedTeachersList />,
+          },
         ],
       },
     ],
