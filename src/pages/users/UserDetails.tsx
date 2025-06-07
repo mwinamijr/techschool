@@ -1,55 +1,68 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "../../app/hooks";
-import { fetchUsers } from "../../features/userSlice";
+import { fetchUserDetails, updateUser } from "../../features/userSlice";
 import DashboardLayout from "../../layouts/DashboardLayout";
 import Spinner from "../../components/Spinner";
 import TabButton from "../../components/TabButton";
-
-import userImage from "../../assets/user_male.jpg"; // Placeholder image
+import userImage from "../../assets/user_male.jpg";
 
 export default function UserDetails() {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
-  const { users, loading } = useSelector((state: any) => state.getUsers);
+  const { user, loading, error } = useSelector((state: any) => state.getUsers);
+  const { updating } = useSelector((state: any) => state.updateUser || {});
 
-  const [tab, setTab] = useState<"profile" | "settings" | "password">(
-    "profile"
-  );
-  const [formData, setFormData] = useState({ email: "", phone: "" });
-  const [passwords, setPasswords] = useState({
-    newPassword: "",
-    confirmPassword: "",
+  const [tab, setTab] = useState<"profile" | "settings">("profile");
+  const [formData, setFormData] = useState({
+    first_name: "",
+    middle_name: "",
+    last_name: "",
+    email: "",
+    phone: "",
+    gender: "",
   });
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchUserDetails(id));
   }, [dispatch]);
-
-  const user = users.find((u: any) => u.id.toString() === id);
 
   useEffect(() => {
     if (user) {
       setFormData({
+        first_name: user.first_name || "",
+        middle_name: user.middle_name || "",
+        last_name: user.last_name || "",
         email: user.email || "",
         phone: user.phone_number || "",
+        gender: user.gender || "",
       });
     }
   }, [user]);
 
-  const handleSettingsSubmit = (e: React.FormEvent) => {
+  const handleSettingsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert("Settings updated! (hook this to dispatch update)");
-  };
-
-  const handlePasswordReset = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (passwords.newPassword !== passwords.confirmPassword) {
-      alert("Passwords do not match!");
+    if (!formData.email || !formData.phone) {
+      alert("All fields are required.");
       return;
     }
-    alert("Password changed! (hook this to dispatch change)");
+    try {
+      await dispatch(
+        updateUser({
+          id,
+          first_name: formData.first_name,
+          middle_name: formData.middle_name,
+          last_name: formData.last_name,
+          email: formData.email,
+          phone_number: formData.phone,
+          gender: formData.gender,
+        })
+      ).unwrap();
+      alert("Profile updated successfully.");
+    } catch (err) {
+      alert("Failed to update profile. Please try again.");
+    }
   };
 
   return (
@@ -59,6 +72,7 @@ export default function UserDetails() {
 
         {loading && <Spinner />}
         {!loading && !user && <p>User not found.</p>}
+        {error && <div className="text-red-500 text-sm">{error}</div>}
 
         {user && (
           <>
@@ -70,15 +84,14 @@ export default function UserDetails() {
               />
               <div>
                 <h2 className="text-xl font-semibold text-gray-700">
-                  {user.first_name} {user.last_name}
+                  {user.first_name} {user?.middle_name} {user.last_name}
                 </h2>
                 <p className="text-gray-500">{user.email}</p>
                 <p className="capitalize text-gray-500">{user.role}</p>
               </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex space-x-2 border-b border-gray-300 mb-4">
+            <div className="flex space-x-2 border-b border-gray-300 mb-4 pb-2">
               <TabButton
                 label="Profile"
                 active={tab === "profile"}
@@ -89,14 +102,8 @@ export default function UserDetails() {
                 active={tab === "settings"}
                 onClick={() => setTab("settings")}
               />
-              <TabButton
-                label="Password"
-                active={tab === "password"}
-                onClick={() => setTab("password")}
-              />
             </div>
 
-            {/* Tab Content */}
             {tab === "profile" && (
               <div className="bg-white p-6 rounded shadow space-y-4">
                 <div>
@@ -109,6 +116,9 @@ export default function UserDetails() {
                 <div>
                   <span className="font-medium">Role:</span> {user.role}
                 </div>
+                <div>
+                  <span className="font-medium">Gender:</span> {user.gender}
+                </div>
               </div>
             )}
 
@@ -118,6 +128,41 @@ export default function UserDetails() {
                 className="bg-white p-6 rounded shadow space-y-4"
               >
                 <div>
+                  <label className="block font-medium mb-1">First Name</label>
+                  <input
+                    type="text"
+                    className="w-full border rounded px-3 py-2"
+                    value={formData.first_name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, first_name: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1">Middle Name</label>
+                  <input
+                    type="text"
+                    className="w-full border rounded px-3 py-2"
+                    value={formData.middle_name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, middle_name: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block font-medium mb-1">Last Name</label>
+                  <input
+                    type="text"
+                    className="w-full border rounded px-3 py-2"
+                    value={formData.last_name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, last_name: e.target.value })
+                    }
+                    required
+                  />
+                </div>
+                <div>
                   <label className="block font-medium mb-1">Email</label>
                   <input
                     type="email"
@@ -126,6 +171,7 @@ export default function UserDetails() {
                     onChange={(e) =>
                       setFormData({ ...formData, email: e.target.value })
                     }
+                    required
                   />
                 </div>
                 <div>
@@ -137,57 +183,29 @@ export default function UserDetails() {
                     onChange={(e) =>
                       setFormData({ ...formData, phone: e.target.value })
                     }
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
-                >
-                  Save Changes
-                </button>
-              </form>
-            )}
-
-            {tab === "password" && (
-              <form
-                onSubmit={handlePasswordReset}
-                className="bg-white p-6 rounded shadow space-y-4"
-              >
-                <div>
-                  <label className="block font-medium mb-1">New Password</label>
-                  <input
-                    type="password"
-                    className="w-full border rounded px-3 py-2"
-                    value={passwords.newPassword}
-                    onChange={(e) =>
-                      setPasswords({
-                        ...passwords,
-                        newPassword: e.target.value,
-                      })
-                    }
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block font-medium mb-1">
-                    Confirm Password
-                  </label>
-                  <input
-                    type="password"
-                    className="w-full border rounded px-3 py-2"
-                    value={passwords.confirmPassword}
+                  <label className="block font-medium mb-1">Gender</label>
+                  <select
+                    name="gender"
+                    value={formData.gender}
                     onChange={(e) =>
-                      setPasswords({
-                        ...passwords,
-                        confirmPassword: e.target.value,
-                      })
+                      setFormData({ ...formData, gender: e.target.value })
                     }
-                  />
+                    className="w-full border p-2 rounded"
+                  >
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
                 </div>
                 <button
                   type="submit"
-                  className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700"
+                  disabled={updating}
+                  className="bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 disabled:opacity-60"
                 >
-                  Reset Password
+                  {updating ? "Saving..." : "Save Changes"}
                 </button>
               </form>
             )}

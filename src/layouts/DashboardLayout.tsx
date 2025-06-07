@@ -22,11 +22,36 @@ interface Props {
 }
 
 const navigation = [
-  { name: "Dashboard", icon: HomeIcon, path: "/dashboard" },
-  { name: "Users", icon: UserGroupIcon, path: "/users" },
-  { name: "Lessons", icon: BookOpenIcon, path: "/lessons" },
-  { name: "Examinations", icon: PencilIcon, path: "/examinations" },
-  { name: "Settings", icon: Cog6ToothIcon, path: "/settings" },
+  {
+    name: "Dashboard",
+    icon: HomeIcon,
+    path: "/dashboard",
+    allowedRoles: ["admin", "teacher", "student"],
+  },
+  {
+    name: "Users",
+    icon: UserGroupIcon,
+    path: "/users",
+    allowedRoles: ["admin"],
+  },
+  {
+    name: "Lessons",
+    icon: BookOpenIcon,
+    path: "/lessons",
+    allowedRoles: ["teacher", "student"],
+  },
+  {
+    name: "Examinations",
+    icon: PencilIcon,
+    path: "/examinations",
+    allowedRoles: ["admin", "teacher", "student"],
+  },
+  {
+    name: "Settings",
+    icon: Cog6ToothIcon,
+    path: "/settings",
+    allowedRoles: ["admin", "teacher", "student"],
+  },
 ];
 
 export default function DashboardLayout({ children }: Props) {
@@ -43,24 +68,29 @@ export default function DashboardLayout({ children }: Props) {
     navigate("/login");
   };
 
-  const renderNavItems = () =>
-    navigation.map((item) => (
-      <Link
-        to={item.path}
-        key={item.name}
-        className={clsx(
-          "flex items-center px-4 py-2 space-x-3 rounded-md transition hover:bg-orange-100",
-          location.pathname === item.path && "bg-orange-100"
-        )}
-        onClick={() => setMobileOpen(false)}
-      >
-        <item.icon className="w-5 h-5 text-orange-500" />
-        <span>{item.name}</span>
-      </Link>
-    ));
+  const renderNavItems = () => {
+    const role = userInfo?.role;
+
+    return navigation
+      .filter((item) => item.allowedRoles.includes(role))
+      .map((item) => (
+        <Link
+          to={item.path}
+          key={item.name}
+          className={clsx(
+            "flex items-center px-4 py-2 space-x-3 rounded-md transition hover:bg-orange-100",
+            location.pathname === item.path && "bg-orange-100"
+          )}
+          onClick={() => setMobileOpen(false)}
+        >
+          <item.icon className="w-5 h-5 text-orange-500" />
+          <span>{item.name}</span>
+        </Link>
+      ));
+  };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex overflow-hidden">
       {/* Sidebar - Desktop */}
       <aside className="hidden md:flex md:flex-col w-64 bg-white shadow-lg p-4 space-y-4">
         <div className="text-2xl font-bold text-orange-500 mb-6">
@@ -133,7 +163,7 @@ export default function DashboardLayout({ children }: Props) {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-md z-50">
                   <Link
-                    to={`/users/${userInfo?.id}`}
+                    to={`/profile`}
                     className="block px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
                     onClick={() => setDropdownOpen(false)}
                   >
@@ -159,9 +189,7 @@ export default function DashboardLayout({ children }: Props) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 bg-gray-100">
-          {children}
-        </main>
+        <main className="flex-1 overflow-auto p-4 bg-gray-100">{children}</main>
       </div>
     </div>
   );

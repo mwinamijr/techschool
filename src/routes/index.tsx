@@ -11,6 +11,7 @@ import NotFound from "../pages/NotFound";
 import ProtectedRoute from "./ProtectedRoute";
 import UsersList from "../pages/users/UsersList";
 import UserDetails from "../pages/users/UserDetails";
+import UserProfile from "../pages/users/UserProfile";
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +38,8 @@ export const router = createBrowserRouter([
       { path: "/dashboard", element: <Dashboard /> },
       // Public to all authenticated users
       { path: "/examinations", element: <Examinations /> },
+
+      { path: "/profile", element: <UserProfile /> },
 
       // Route for teachers only
       {

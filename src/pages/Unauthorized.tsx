@@ -12,7 +12,7 @@ export default function Unauthorized() {
         onClick={() => navigate(-1)}
         className="mt-4 text-orange-600 hover:underline font-medium"
       >
-        Go to Home
+        Go to Back to previous page
       </button>
     </div>
   );

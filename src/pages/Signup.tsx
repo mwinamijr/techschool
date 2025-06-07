@@ -14,6 +14,7 @@ export default function Signup() {
     phone_number: "",
     password: "",
     confirmPassword: "",
+    gender: "male",
     role: "student",
   });
 
@@ -43,6 +44,7 @@ export default function Signup() {
       form.phone_number &&
       form.password &&
       form.confirmPassword &&
+      form.gender &&
       form.role;
 
     setPasswordMismatch(form.password !== form.confirmPassword);
@@ -204,6 +206,16 @@ export default function Signup() {
           className={getInputClass("confirmPassword")}
           required
         />
+
+        <select
+          name="gender"
+          value={form.gender}
+          onChange={handleChange}
+          className="w-full border p-2 rounded"
+        >
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
 
         <select
           name="role"

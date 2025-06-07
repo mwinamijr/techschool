@@ -66,6 +66,7 @@ export const register = createAsyncThunk<
     email: string;
     phone_number: string;
     password: string;
+    gender: string;
     role: "student" | "teacher";
   },
   { rejectValue: string; state: { auth: AuthState } }
@@ -80,6 +81,7 @@ export const register = createAsyncThunk<
       email,
       phone_number,
       password,
+      gender,
       role,
     },
     { rejectWithValue }
@@ -101,6 +103,7 @@ export const register = createAsyncThunk<
           email,
           phone_number,
           password,
+          gender,
           role,
         },
         config

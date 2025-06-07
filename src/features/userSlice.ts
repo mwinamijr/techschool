@@ -17,6 +17,7 @@ export interface User {
 
 interface UserState {
   users: User[];
+  user: User | null;
   profile: User | null;
   loading: boolean;
   error: string | null;
@@ -27,6 +28,7 @@ interface UserState {
 
 const initialState: UserState = {
   users: [],
+  user: null,
   profile: null,
   loading: false,
   error: null,
@@ -60,17 +62,82 @@ export const fetchUsers = createAsyncThunk<User[]>(
   }
 );
 
-export const fetchProfile = createAsyncThunk<User>(
-  "users/fetchProfile",
-  async (_, thunkAPI) => {
+export const fetchUserDetails = createAsyncThunk<User>(
+  "users/fetchUser",
+  async (id, thunkAPI) => {
     try {
-      const { data } = await axios.get(`${djangoUrl}/api/users/profile/`);
+      const { getState } = thunkAPI;
+      const {
+        auth: { userInfo },
+      } = getState() as { auth: { userInfo: { token: string } } };
+
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      const { data } = await axios.get(`${djangoUrl}/api/users/${id}`, config);
       return data;
     } catch (error) {
       return thunkAPI.rejectWithValue(getErrorMessage(error));
     }
   }
 );
+
+export const fetchProfile = createAsyncThunk<User>(
+  "users/fetchProfile",
+  async (_, thunkAPI) => {
+    try {
+      const { getState } = thunkAPI;
+      const {
+        auth: { userInfo },
+      } = getState() as { auth: { userInfo: { token: string } } };
+
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+      const { data } = await axios.get(
+        `${djangoUrl}/api/users/profile/`,
+        config
+      );
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(getErrorMessage(error));
+    }
+  }
+);
+
+export const updateProfile = createAsyncThunk<
+  User,
+  { id: number; updates: Partial<User> },
+  { rejectValue: string }
+>("users/profileUpdate", async ({ updates }, thunkAPI) => {
+  try {
+    const { getState } = thunkAPI;
+    const {
+      auth: { userInfo },
+    } = getState() as { auth: { userInfo: { token: string } } };
+
+    const config = {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: `Bearer ${userInfo.token}`,
+      },
+    };
+    const { data } = await axios.put(
+      `${djangoUrl}/api/users/profile/`,
+      updates,
+      config
+    );
+    return data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(getErrorMessage(error));
+  }
+});
 
 export const fetchUnverifiedTeachers = createAsyncThunk<User[]>(
   "users/fetchUnverifiedTeachers",
@@ -166,8 +233,30 @@ const userSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      .addCase(fetchUserDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUserDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(fetchUserDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(fetchProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchProfile.fulfilled, (state, action) => {
+        state.loading = false;
         state.profile = action.payload;
+      })
+      .addCase(fetchProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       })
 
       .addCase(fetchUnverifiedTeachers.fulfilled, (state, action) => {
@@ -177,6 +266,19 @@ const userSlice = createSlice({
       .addCase(approveTeacher.fulfilled, (state, action) => {
         const idx = state.users.findIndex((u) => u.id === action.payload.id);
         if (idx >= 0) state.users[idx] = action.payload;
+      })
+
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.profile = action.payload;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       })
 
       .addCase(updateUser.fulfilled, (state, action) => {
