@@ -168,19 +168,6 @@ export const approveTeacher = createAsyncThunk<
   }
 });
 
-export const updateUser = createAsyncThunk<
-  User,
-  { id: number; updates: Partial<User> },
-  { rejectValue: string }
->("users/update", async ({ id, updates }, { rejectWithValue }) => {
-  try {
-    const { data } = await axios.put(`${djangoUrl}/api/users/${id}/`, updates);
-    return data;
-  } catch (error) {
-    return rejectWithValue(getErrorMessage(error));
-  }
-});
-
 export const deleteUser = createAsyncThunk<
   number,
   number,

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/react/24/outline";
 import Spinner from "../../components/Spinner";
 import { toast } from "react-toastify";
+import Breadcrumb from "../../components/Breadcrumb";
 
 export default function UsersList() {
   const dispatch = useAppDispatch();
@@ -34,6 +35,12 @@ export default function UsersList() {
 
   return (
     <DashboardLayout>
+      <Breadcrumb
+        items={[
+          { label: "Dashboard", to: "/dashboard" },
+          { label: "Users List" },
+        ]}
+      />
       <div className="p-6">
         <h1 className="text-3xl font-bold mb-4 text-gray-800">Users List</h1>
 

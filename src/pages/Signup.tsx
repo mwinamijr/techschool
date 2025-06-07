@@ -213,6 +213,7 @@ export default function Signup() {
           onChange={handleChange}
           className="w-full border p-2 rounded"
         >
+          <option value="">Select Gender</option>
           <option value="male">Male</option>
           <option value="female">Female</option>
         </select>
